@@ -1,9 +1,0 @@
-{
-    "python.linting.pylintEnabled": true,
-    "python.linting.enabled": true,
-    "python.linting.pylintPath": "C:\\Users\\alexm\\AppData\\Local\\pypoetry\\Cache\\virtualenvs\\py-mx-hplc-nz8mjFzS-py3.9\\Scripts\\pylint.exe",
-    "python.linting.pylintArgs": [
-        "--init-hook=\"import sys; sys.path.append('C:\\Users\\alexm\\source\\repos\\py-mx-hplc\\py_mx_hplc')\"" 
-    ],
-    "python.pythonPath": "c:\\Users\\alexm\\Documents\\repos\\py-mx-hplc\\.venv\\Scripts\\python.exe"
-}

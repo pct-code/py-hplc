@@ -1,16 +1,20 @@
-"""Serial port wrapper for Next Generation pumps."""
+"""Serial port wrapper for Next Generation pumps.
+The code in this file provides a thin Python wrapper around the pump's commands.
+It uses properties to provide easy access to commonly used information about the pump.
+It also handles the input/output parsing necessary to deal with
+pumps using different pressure units or flowrate precisions.
+"""
 
 from __future__ import annotations
 
 from logging import Logger
 from tkinter.constants import NONE
-from typing import TYPE_CHECKING, Any, Union
+from typing import Union
 
-from py_mx_hplc.next_gen_pump_base import (LEAK_MODES,
-                                                    SOLVENT_COMPRESSIBILITY,
-                                                    NextGenPumpBase)
-from py_mx_hplc.pump_error import PumpError
 from serial import serial_for_url
+
+from py_mx_hplc.next_gen_pump_base import NextGenPumpBase
+from py_mx_hplc.pump_error import PumpError
 
 # these are more or less useful than an int
 LEAK_MODES = {
@@ -49,11 +53,11 @@ class NextGenPump(NextGenPumpBase):
     # general pump commands ------------------------------------------------------------
 
     def run(self) -> None:
-        """Runs the pump. 🏃‍♀️"""
-        return self.command("ru")
+        """Runs the pump. ▶"""
+        self.command("ru")
 
     def stop(self) -> None:
-        """Stops the pump. 🛑 """
+        """Stops the pump. ⏸"""
         self.command("st")
 
     def keypad_enable(self) -> None:
@@ -73,7 +77,7 @@ class NextGenPump(NextGenPumpBase):
         self.command("re")
 
     def zero_seal(self) -> None:
-        """Zero the seal-life stroke counter."""
+        """Zero the seal-life stroke counter. 0️⃣"""
         self.command("zs")
 
     # bundled info retrieval -- these will return dicts -------------------------------
@@ -118,8 +122,8 @@ class NextGenPump(NextGenPumpBase):
             "keypad enabled", "motor stall fault", "response"
         """
         result = self.command("pi")
-        # OK,<flow>,<R/S>,<p_comp>,<head>,0,1,0,0,
-        # <UPF>,<LPF>,<prime>,<keypad>,0,0,0,0,<stall>/
+        # OK,<flow>,<R/S>,<p_comp>,<head>,0,1,0,0,<UPF>,<LPF>,<prime>,<keypad>,
+        # 0,0,0,0,<stall>/
         msg = result["response"].split(",")
         result["flowrate"] = bool(msg[1])
         result["is running"] = bool(msg[2])
@@ -149,7 +153,8 @@ class NextGenPump(NextGenPumpBase):
 
     # general properties  ---------------------------------------------
 
-    def get_stroke_counter(self) -> int:
+    @property
+    def stroke_counter(self) -> int:
         """Gets the seal-life stroke counter as an int."""
         result = self.command("gs")
         # OK,GS:<seal>/
@@ -182,19 +187,29 @@ class NextGenPump(NextGenPumpBase):
         # OK,UC:<user_comp>/
         self.command("uc" + f"{round(value * 1000):04}")
 
-    def set_flowrate(self, flowrate: float) -> None:
-        """Sets the flowrate of the pump to the passed value,
-        not exceeding the pump's maximum.
+    @property
+    def flowrate(self) -> float:
+        """Gets the flowrate of the pump as a float representing mililiters per minute.
+
+        Returns:
+            float: the pump's flowrate in mililiters per minute
+        """
+        return self.current_conditions()["flowrate"]
+
+    @flowrate.setter
+    def flowrate(self, flowrate: float) -> None:
+        """Sets the flowrate of the pump to the passed value as a float representing
+        mililiters per minute, not exceeding the pump's maximum.
 
         Args:
-            flowrate (float): [description]
-
-        Raises:
-            NotImplementedError: [description]
+            flowrate (float): a float representing mililiters per minute
         """
-        raise NotImplementedError
+        # convert arg as float mL to base units
+        flowrate = flowrate * 10 ** 3  # gets to L/min
+        flowrate = round(flowrate * 10 * self.flowrate_factor)
+        self.command(f"fi{flowrate}")
 
-    #  individual properties for pressure enabled pumps --------------------------------
+    # individual properties for pressure enabled pumps ---------------------------------
     @property
     def pressure(self) -> float:
         """Gets the pump's current pressure as a float using the pump's pressure units.
@@ -210,26 +225,43 @@ class NextGenPump(NextGenPumpBase):
         result = self.command("up")
         # OK,<UPL>/
         return float(result["response"].split(",")[1][:-1])
-    
+
     @upper_pressure_limit.setter
     def upper_presure_limit(self, limit: float) -> None:
-        """Sets the pump's upper pressure limit."""
-        raise NotImplementedError
-    
+        """Sets the pump's upper pressure limit to a float in the pump's pressure units.
+        Units can be inspected on the instance's pressure_units attribute.
+        Values in bars can be precise to one digit after the decimal point.
+        Values in MPa can be precise to two digits after the decimal point.
+        """
+        if self.pressure_units == "psi":
+            limit = round(limit)
+        elif self.pressure_units == "bar":
+            limit = round(round(limit, 1) * 10)  # 19.99 -> 20.0 -> 200
+        elif self.pressure_units == "MPa":
+            limit = round(round(limit, 2) * 100)  # 1.999 -> 2.00 -> 200
+        self.command(f"up{limit}")
+
     @property
     def lower_pressure_limit(self) -> float:
-        """Gets the pump's current lower pressure limit as an int.
-        Returns -1 if an error occurs."""
-        # todo deal with bar/MPa responses
+        """Gets the pump's current lower pressure limit as an int."""
         result = self.command("lp")
         # OK,<LPL>/
-        result["lower pressure limit"] = int(result["response"].split(",")[1][:-1])
-        return result
-    
+        return float(result["response"].split(",")[1][:-1])
+
     @lower_pressure_limit.setter
     def lower_presure_limit(self, limit: float) -> None:
-        """Sets the pump's lower pressure limit."""
-        raise NotImplementedError
+        """Sets the pump's lower pressure limit.
+        Units can be inspected on the instance's pressure_units attribute.
+        Values in bars can be precise to one digit after the decimal point.
+        Values in MPa can be precise to two digits after the decimal point.
+        """
+        if self.pressure_units == "psi":
+            limit = round(limit)
+        elif self.pressure_units == "bar":
+            limit = round(round(limit, 1) * 10)  # 19.99 -> 20.0 -> 200
+        elif self.pressure_units == "MPa":
+            limit = round(round(limit, 2) * 100)  # 1.999 -> 2.00 -> 200
+        self.command(f"lp{limit}")
 
     # properties for pumps with a leak sensor ------------------------------------------
 
@@ -252,7 +284,7 @@ class NextGenPump(NextGenPumpBase):
         result = self.command("lm")
         # OK,LM:<mode>/
         mode = int(result["response"].split(":")[1][:-1])
-        # could return a descriptive string instead with the following line
+        # could return a descriptive string instead
         # return LEAK_MODES.get(mode)
         return mode
 
@@ -260,7 +292,7 @@ class NextGenPump(NextGenPumpBase):
     @property
     def solvent(self) -> int:
         """Gets the solvent compressibility value in 10 ** (-6) per bar.
-        See NextGenPumpBase.SOLVENT_COMPRESSIBILITY to get the solvent name.
+        See SOLVENT_COMPRESSIBILITY to get the solvent name.
 
         Returns:
             int: the solvent compressibility value in 10 ** (-6) per bar
@@ -271,7 +303,7 @@ class NextGenPump(NextGenPumpBase):
     @solvent.setter
     def solvent(self, value: Union[str, int]) -> None:
         """Sets the solvent compressibility value in 10 ** (-6) per bar.
-        Alternatively, accepts the name of a solvent as mapped in SOLVENT_COMPRESSIBILITY.
+        Alternatively, accepts the name of a solvent key in SOLVENT_COMPRESSIBILITY.
 
         Args:
             value (Union[str, int]): The name of a solvent defined in
@@ -281,5 +313,4 @@ class NextGenPump(NextGenPumpBase):
         # if we got a solvent name string, convert it to an int
         if value in SOLVENT_COMPRESSIBILITY.keys():
             value = SOLVENT_COMPRESSIBILITY.get(value)
-        # OK/
-        self.command(f"ss{value}")
+        self.command(f"ss{value}")  # OK/

@@ -12,6 +12,22 @@ from py_mx_hplc.next_gen_pump_base import (LEAK_MODES,
 from py_mx_hplc.pump_error import PumpError
 from serial import serial_for_url
 
+# these are more or less useful than an int
+LEAK_MODES = {
+    0: "leak sensor disabled",
+    1: "detected leak does not cause fault",
+    2: "detected leak does cause fault",
+}
+# units are 10 ** (-6) per bar
+SOLVENT_COMPRESSIBILITY = {
+    "acetonitrile": 115,
+    "hexane": 167,
+    "isopropanol": 84,
+    "methanol": 121,
+    "tetrahydrofuran": 54,
+    "water": 46,
+}
+
 
 class NextGenPump(NextGenPumpBase):
     """Serial port wrapper for Next Generation pumps.

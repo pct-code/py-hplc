@@ -17,21 +17,6 @@ if TYPE_CHECKING:
 
 COMMAND_END = b"\r"  # terminates messages sent
 MESSAGE_END = b"/"  # terminates messages received
-# these are more or less useful than an int
-LEAK_MODES = {
-    0: "leak sensor disabled",
-    1: "detected leak does not cause fault",
-    2: "detected leak does cause fault",
-}
-# units are 10 ** (-6) per bar
-SOLVENT_COMPRESSIBILITY = {
-    "acetonitrile": 115,
-    "hexane": 167,
-    "isopropanol": 84,
-    "methanol": 121,
-    "tetrahydrofuran": 54,
-    "water": 46,
-}
 
 
 class NextGenPumpBase:

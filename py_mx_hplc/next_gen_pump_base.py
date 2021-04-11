@@ -1,15 +1,15 @@
 """Serial port wrapper for MX-class Teledyne pumps."""
 
 from __future__ import annotations
-import sys
+
 import logging
 import time
-from typing import TYPE_CHECKING, Any, Union
+from typing import TYPE_CHECKING, Any
 
 from serial import SerialException, serial_for_url
 from serial.serialutil import EIGHTBITS, PARITY_NONE, STOPBITS_ONE
 
-from pct_scalewiz.models.pump_error import PumpError
+from py_mx_hplc.pump_error import PumpError
 
 if TYPE_CHECKING:
     from logging import Logger
@@ -82,12 +82,12 @@ class NextGenPumpBase:
         """Get persistent pump properties."""
         # general properties -----------------------------------------------------------
         # firmware
-        response = self.command("id")["response"]  # expect "OK,<ID> Version <ver>/"
-        if "OK" in response:
+        response = self.command("id")["response"]  
+        if "OK," in response:  # expect OK,<ID> Version <ver>/
             self.id = response.split(",")[1][:-1].strip()
         # max flowrate
         response = self.command("mf")["response"]
-        if "OK" in response:  # expect "OK,MF:<max_flow>/"
+        if "OK,MF:" in response:  # expect OK,MF:<max_flow>/
             mf = response.split(":")[1][:-1]
             self.max_flowrate = float(mf)
         # volumetric resolution - used for setting flowrate
@@ -96,17 +96,17 @@ class NextGenPumpBase:
         flow = len(response.split(",")[1])
         if flow == 4:  # eg. "5.00"
             self.flowrate_factor = -5  # FI takes microliters/min * 10 ints
-        elif flow == 5:  # eg. "5.000" -- hopefully
+        else:  # eg. "5.000" -- hopefully
             self.flowrate_factor = -6  # FI takes microliters/min as ints
 
         # for pumps that have a pressure sensor ----------------------------------------
         # pressure units
         response = self.command("pu")["response"]
-        if "OK" in response:  # expect "OK,<p_units>/"
+        if "OK," in response:  # expect "OK,<p_units>/"
             self.pressure_units = response.split(",")[1][:-1]
         # max pressure
         response = self.command("mp")["response"]
-        if "OK" in response: # expect "OK,MP:<max_pressure>/"
+        if "OK,MP:" in response: # expect "OK,MP:<max_pressure>/"
             self.max_pressure = float(response.split(":")[1][:-1])
 
     def command(self, command: bytes) -> dict[str, Any]:
@@ -135,9 +135,9 @@ class NextGenPumpBase:
             # self.serial.write(b"#")  
             self.serial.reset_input_buffer()
             self.serial.reset_output_buffer()
-            time.sleep(delay) # could defer here if async
+            time.sleep(delay)  # could defer here if async
             # it seems getting pre-encoded strings from a dict is only slightly faster,
-            # and only some of the time, when compared to just encoding on the fly.
+            # and only some of the time, when compared to just encoding args on the fly
             self.serial.write(msg.encode() + COMMAND_END)
             self.logger.debug("Sent %s (attempt %s/3)", msg, tries)
             if msg == "#": # this won't give a response

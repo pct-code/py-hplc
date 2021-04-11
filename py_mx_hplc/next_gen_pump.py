@@ -1,19 +1,16 @@
 """Serial port wrapper for Next Generation pumps."""
 
 from __future__ import annotations
+
 from logging import Logger
 from tkinter.constants import NONE
-
 from typing import TYPE_CHECKING, Any, Union
 
+from py_mx_hplc.next_gen_pump_base import (LEAK_MODES,
+                                                    SOLVENT_COMPRESSIBILITY,
+                                                    NextGenPumpBase)
+from py_mx_hplc.pump_error import PumpError
 from serial import serial_for_url
-
-from pct_scalewiz.models.next_gen_pump_base import (
-    LEAK_MODES,
-    SOLVENT_COMPRESSIBILITY,
-    NextGenPumpBase,
-)
-from pct_scalewiz.models.pump_error import PumpError
 
 
 class NextGenPump(NextGenPumpBase):

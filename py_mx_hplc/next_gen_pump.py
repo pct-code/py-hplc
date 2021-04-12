@@ -8,13 +8,13 @@ pumps using different pressure units or flowrate precisions.
 from __future__ import annotations
 
 from logging import Logger
-from tkinter.constants import NONE
-from typing import Union
-
-from serial import serial_for_url
+from typing import TYPE_CHECKING
 
 from py_mx_hplc.next_gen_pump_base import NextGenPumpBase
-from py_mx_hplc.pump_error import PumpError
+
+if TYPE_CHECKING:
+    from typing import Union
+
 
 # these are more or less useful than an int
 LEAK_MODES = {
@@ -38,7 +38,8 @@ class NextGenPump(NextGenPumpBase):
     Commands to the pumps are available as methods on this object.
 
     Every command will return a dict representing the result of the command.
-    This dict will contain at least a "response" key whose value is a string represtation of the pump's response.
+    This dict will contain at least a "response" key whose value is a string
+    represtation of the pump's response.
     """
 
     def __init__(self, device: str, logger: Logger = None) -> None:
@@ -48,7 +49,7 @@ class NextGenPump(NextGenPumpBase):
             device (str): [description]
             logger (Logger, optional): [description]. Defaults to None.
         """
-        super().__init__(device, logger)
+        NextGenPumpBase.__init__(device, logger)
 
     # general pump commands ------------------------------------------------------------
 
@@ -154,6 +155,7 @@ class NextGenPump(NextGenPumpBase):
 
     @property
     def is_running(self) -> None:
+        """Returns a bool representing if the pump is running or not."""
         return self.current_state()["is running"]
 
     @property
@@ -218,7 +220,7 @@ class NextGenPump(NextGenPumpBase):
     @property
     def pressure(self) -> float:
         """Gets the pump's current pressure as a float using the pump's pressure units.
-        
+
         Pressure units are most easily found on a pump instance at .pressure_units
         """
         # OK,<pressure>/
@@ -239,8 +241,7 @@ class NextGenPump(NextGenPumpBase):
 
     @upper_pressure_limit.setter
     def upper_pressure_limit(self, limit: float) -> None:
-        """Sets the pump's upper pressure limit to a float in the pump's pressure units.
-        """
+        """Sets the upper pressure limit to a float in the pump's pressure units."""
         if self.pressure_units == "psi":
             limit = round(limit)
         elif self.pressure_units == "bar":
@@ -251,8 +252,8 @@ class NextGenPump(NextGenPumpBase):
 
     @property
     def lower_pressure_limit(self) -> float:
-        """Gets/sets the pump's current lower pressure limit as a float.
-        
+        """Gets/sets the lower pressure limit as a float.
+
         Units can be inspected on the instance's pressure_units attribute.
         Values in bars can be precise to one digit after the decimal point.
         Values in MPa can be precise to two digits after the decimal point.
@@ -278,7 +279,7 @@ class NextGenPump(NextGenPumpBase):
     def leak_detected(self) -> bool:
         """Returns a bool representing if a leak is detected.
         Pumps without a leak sensor always return False.
-        
+
         Returns:
             bool: [description]
         """
@@ -300,7 +301,7 @@ class NextGenPump(NextGenPumpBase):
         # could return a descriptive string instead
         # return LEAK_MODES.get(mode)
         return mode
-    
+
     @leak_mode.setter
     def leak_mode(self, mode: int) -> None:
         """Sets the pump's leak mode."""

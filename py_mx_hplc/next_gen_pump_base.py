@@ -47,7 +47,7 @@ class NextGenPumpBase:
         # persistent identifying attributes
         self.max_flowrate: float = None
         self.max_pressure: float = None
-        self.id: str = None
+        self.version: str = None
         self.pressure_units: str = None
         self.head: str = None
         # other -- for converting user args on the fly
@@ -63,9 +63,9 @@ class NextGenPumpBase:
         try:
             self.serial.open()
             self.logger.info("Serial port connected")
-        except SerialException as e:
+        except SerialException as err:
             self.logger.critical("Could not open a serial connection")
-            self.logger.exception(e)
+            self.logger.exception(err)
 
     def identify(self):
         """Get persistent pump properties."""
@@ -73,12 +73,11 @@ class NextGenPumpBase:
         # firmware
         response = self.command("id")["response"]
         if "OK," in response:  # expect OK,<ID> Version <ver>/
-            self.id = response.split(",")[1][:-1].strip()
+            self.version = response.split(",")[1][:-1].strip()
         # max flowrate
         response = self.command("mf")["response"]
         if "OK,MF:" in response:  # expect OK,MF:<max_flow>/
-            mf = response.split(":")[1][:-1]
-            self.max_flowrate = float(mf)
+            self.max_flowrate = float(response.split(":")[1][:-1])
         # volumetric resolution - used for setting flowrate
         # expect OK,<flow>,<UPL>,<LPL>,<p_units>,0,<R/S>,0/
         response = self.command("cs")["response"]
@@ -98,7 +97,19 @@ class NextGenPumpBase:
         if "OK,MP:" in response:  # expect "OK,MP:<max_pressure>/"
             self.max_pressure = float(response.split(":")[1][:-1])
 
-    def command(self, command: bytes) -> dict[str, Any]:
+    def command(self, command: str) -> dict[str, Any]:
+        """Sends the passed string to the pump as bytes.
+
+        Args:
+            command (str): The message to be sent as bytes
+
+        Raises:
+            PumpError: An exception describing what went wrong
+
+        Returns:
+            dict[str, Any]: A dictionary containing at least a "response" key
+            with the pump's response
+        """
         response = self.write(command)
         if "Er/" in response:
             raise PumpError(
@@ -107,14 +118,23 @@ class NextGenPumpBase:
                 message="The pump threw an error in response to a command.",
                 port=self.serial.name,
             )
-        else:
-            return {"response": response}  # we parse this later and add entries
+
+        return {"response": response}  # we parse this later and add entries
 
     def write(self, msg: str, delay: float = 0.015) -> str:
-        """Write a command to the pump. A response will be returned after 2 * delay seconds.
+        """Write a command to the pump.
+
+        A response will be returned after 2 * delay seconds.
         Delay defaults to 0.015 s per pump documentation.
 
         Returns the pump's response string.
+
+        Args:
+            msg (str): The message to be sent
+            delay (float, optional): A float in seconds. Defaults to 0.015.
+
+        Returns:
+            str: the pump's decoded response string
         """
         response = ""
         tries = 0

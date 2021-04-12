@@ -1,4 +1,4 @@
-from logging import Logger
+"""An exception to be thrown when a pump responds with an error message."""
 
 
 class PumpError(Exception):

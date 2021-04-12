@@ -1,25 +1,25 @@
-Welcome to py-mx-hplc's documentation!
+py-mx-hplc
+======================================
 
 The goal of py-mx-hplc is to provide a class which encapsulates a serial connection and the commands available on SSI-Teledyne Next Generation HPLC pumps.
 Some information about the pump, such as pressure and flowrate, have been abstracted as Python properties available on instances of the class.
 This abstraction alleviates some of the inconsistencies involved in interfacing with various models of pump, and makes observing the pumps generally easier.
 
-This is an unofficial, non-endorsed wrapper. 
+This is an unofficial wrapper. 
 
 View the source_.
+
 .. _source: https://github.com/teauxfu/py-mx-hplc
 
-
-======================================
 .. toctree::
    :caption: Contents:
 
    pump
    pump_base
 
-
 Using the package
 ------------------
+
 First, install the package::
 
    python -m pip install --user py-mx-hplc
@@ -34,8 +34,9 @@ You can inspect the pump for useful information such as its pressure units, firm
    >>> pump.pressure_units
    'psi'
 
-Many pump commands, such as "CC" or "PI", return many pieces of data at once and occasionally include some noise.
-This package makes this data available in descriptive dictionaries. ::
+Many pump commands, such as "CC" (current conditions) or "PI" (pump information), return many pieces of data at once.
+This package makes this data available in concise, descriptive dictionaries.
+Some pump commands return values of 0 or 1 that have no meaning. These are omitted from the dictionaries, but may be inspected using the "reponse" key. ::
 
    >>> pump.current_conditions()
    {'pressure': 1000, 'flowrate': 10.0, 'response': 'OK,0522,12.00'}

@@ -15,6 +15,7 @@ rope = "^0.18.0"
 mypy = "^0.812"
 isort = "^5.7.0"
 Sphinx = "^3.5.4"
+sphinx-rtd-theme = "^0.5.2"
 
 [tool.black]
 line-length = 88

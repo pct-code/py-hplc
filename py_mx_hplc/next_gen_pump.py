@@ -17,12 +17,13 @@ if TYPE_CHECKING:
 
 
 # these are more or less useful than an int
+# currently unused
 LEAK_MODES = {
     0: "leak sensor disabled",
     1: "detected leak does not cause fault",
     2: "detected leak does cause fault",
 }
-# units are 10 ** (-6) per bar
+# units are 10 ** -6 per bar
 SOLVENT_COMPRESSIBILITY = {
     "acetonitrile": 115,
     "hexane": 167,
@@ -125,12 +126,12 @@ class NextGenPump(NextGenPumpBase):
         # OK,<flow>,<R/S>,<p_comp>,<head>,0,1,0,0,<UPF>,<LPF>,<prime>,<keypad>,
         # 0,0,0,0,<stall>/
         msg = result["response"].split(",")
-        result["flowrate"] = bool(int(msg[1]))
+        result["flowrate"] = float(msg[1])
         result["is running"] = bool(int(msg[2]))
         result["pressure compensation"] = float(msg[3])
         result["head"] = msg[4]
-        result["upper limit"] = float(msg[9])
-        result["lower limit"] = float(msg[10])
+        result["upper limit fault"] = bool(int(msg[9]))
+        result["lower limit fault"] = bool(int(msg[10]))
         result["in prime"] = bool(int(msg[11]))
         result["keypad enabled"] = bool(int(msg[12]))
         result["motor stall fault"] = bool(int(msg[17][:-1]))
@@ -152,7 +153,6 @@ class NextGenPump(NextGenPumpBase):
         return result
 
     # general properties  ---------------------------------------------
-
     @property
     def is_running(self) -> None:
         """Returns a bool representing if the pump is running or not."""
@@ -311,7 +311,7 @@ class NextGenPump(NextGenPumpBase):
     # properties for pumps with a solvent select feature ------------------------------
     @property
     def solvent(self) -> int:
-        """Gets/sets the solvent compressibility value in 10 ** (-6) per bar.
+        """Gets/sets the solvent compressibility value in 10 ** -6 per bar.
 
         Alternatively, accepts the name of a solvent mapped in SOLVENT_COMPRESSIBILITY.
         See SOLVENT_COMPRESSIBILITY to get the solvent name.
@@ -321,7 +321,7 @@ class NextGenPump(NextGenPumpBase):
 
     @solvent.setter
     def solvent(self, value: Union[str, int]) -> None:
-        """Gets/sets the solvent compressibility value in 10 ** (-6) per bar."""
+        """Gets/sets the solvent compressibility value in 10 ** -6 per bar."""
         # if we got a solvent name string, convert it to an int
         if value in SOLVENT_COMPRESSIBILITY.keys():
             value = SOLVENT_COMPRESSIBILITY.get(value)

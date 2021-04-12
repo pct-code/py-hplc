@@ -74,6 +74,10 @@ class NextGenPumpBase:
         response = self.command("id")["response"]
         if "OK," in response:  # expect OK,<ID> Version <ver>/
             self.version = response.split(",")[1][:-1].strip()
+        # pump head
+        response = self.command("pi")["response"]
+        if "OK," in response:
+            self.head = response.split(',')[4]
         # max flowrate
         response = self.command("mf")["response"]
         if "OK,MF:" in response:  # expect OK,MF:<max_flow>/

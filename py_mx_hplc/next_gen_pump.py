@@ -49,7 +49,7 @@ class NextGenPump(NextGenPumpBase):
             device (str): [description]
             logger (Logger, optional): [description]. Defaults to None.
         """
-        NextGenPumpBase.__init__(device, logger)
+        NextGenPumpBase.__init__(self, device, logger)
 
     # general pump commands ------------------------------------------------------------
 
@@ -125,15 +125,15 @@ class NextGenPump(NextGenPumpBase):
         # OK,<flow>,<R/S>,<p_comp>,<head>,0,1,0,0,<UPF>,<LPF>,<prime>,<keypad>,
         # 0,0,0,0,<stall>/
         msg = result["response"].split(",")
-        result["flowrate"] = bool(msg[1])
-        result["is running"] = bool(msg[2])
+        result["flowrate"] = bool(int(msg[1]))
+        result["is running"] = bool(int(msg[2]))
         result["pressure compensation"] = float(msg[3])
         result["head"] = msg[4]
         result["upper limit"] = float(msg[9])
         result["lower limit"] = float(msg[10])
-        result["in prime"] = bool(msg[11])
-        result["keypad enabled"] = bool(msg[12])
-        result["motor stall fault"] = bool(msg[17][:-1])
+        result["in prime"] = bool(int(msg[11]))
+        result["keypad enabled"] = bool(int(msg[12]))
+        result["motor stall fault"] = bool(int(msg[17][:-1]))
         return result
 
     def read_faults(self) -> dict[str, bool]:
@@ -146,9 +146,9 @@ class NextGenPump(NextGenPumpBase):
         result = self.command("rf")
         msg = result["response"].split(",")
         # OK,<stall>,<UPF>,<LPF>/
-        result["motor stall fault"] = bool(msg[1])
-        result["upper pressure fault"] = bool(msg(2))
-        result["lower pressure fault"] = bool(msg[3][:-1])
+        result["motor stall fault"] = bool(int(msg[1]))
+        result["upper pressure fault"] = bool(int(msg[2]))
+        result["lower pressure fault"] = bool(int(msg[3][:-1]))
         return result
 
     # general properties  ---------------------------------------------
@@ -212,8 +212,8 @@ class NextGenPump(NextGenPumpBase):
             flowrate (float): a float representing mililiters per minute
         """
         # convert arg as float mL to base units
-        flowrate = flowrate * 10 ** 3  # gets to L/min
-        flowrate = round(flowrate * 10 * self.flowrate_factor)
+        flowrate = flowrate / (10 ** 3)  # gets to L/min
+        flowrate = round(flowrate / (10 ** self.flowrate_factor))
         self.command(f"fi{flowrate}")
 
     # individual properties for pressure enabled pumps ---------------------------------
@@ -231,13 +231,13 @@ class NextGenPump(NextGenPumpBase):
     def upper_pressure_limit(self) -> float:
         """Gets/sets the pump's current upper pressure limit as a float.
 
-        Units can be inspected on the instance's pressure_units attribute.
+        The units used can be inspected on the instance's pressure_units attribute.
         Values in bars can be precise to one digit after the decimal point.
         Values in MPa can be precise to two digits after the decimal point.
         """
         result = self.command("up")
-        # OK,<UPL>/
-        return float(result["response"].split(",")[1][:-1])
+        # OK,UP:<UPL>/
+        return float(result["response"].split(":")[1][:-1])
 
     @upper_pressure_limit.setter
     def upper_pressure_limit(self, limit: float) -> None:
@@ -252,14 +252,14 @@ class NextGenPump(NextGenPumpBase):
 
     @property
     def lower_pressure_limit(self) -> float:
-        """Gets/sets the lower pressure limit as a float.
+        """Gets/sets the lower pressurepump limit as a float.
 
         Units can be inspected on the instance's pressure_units attribute.
         Values in bars can be precise to one digit after the decimal point.
         Values in MPa can be precise to two digits after the decimal point.
         """
         result = self.command("lp")
-        # OK,<LPL>/
+        # OK,LP:<LPL>/
         return float(result["response"].split(",")[1][:-1])
 
     @lower_pressure_limit.setter
@@ -285,7 +285,7 @@ class NextGenPump(NextGenPumpBase):
         """
         result = self.command("ls")
         # OK,LS:<leak>/
-        return bool(result["response"].split(":")[1][:-1])
+        return bool(int(result["response"].split(":")[1][:-1]))
 
     @property
     def leak_mode(self) -> int:
@@ -297,17 +297,15 @@ class NextGenPump(NextGenPumpBase):
         """
         result = self.command("lm")
         # OK,LM:<mode>/
-        mode = int(result["response"].split(":")[1][:-1])
+        return int(result["response"].split(":")[1][:-1])
         # could return a descriptive string instead
-        # return LEAK_MODES.get(mode)
-        return mode
+        # return LEAK_MODES.get(int(result["response"].split(":")[1][:-1]))
+        
 
     @leak_mode.setter
     def leak_mode(self, mode: int) -> None:
         """Sets the pump's leak mode."""
         # todo test how pump responds to out of bounds
-        # if not mode in (0, 1, 2):
-        #     raise PumpError(f"lm{mode}", None, "Invalid leak mode", self.serial.name)
         self.command(f"lm{mode}")
 
     # properties for pumps with a solvent select feature ------------------------------

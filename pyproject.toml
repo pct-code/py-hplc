@@ -3,6 +3,10 @@ name = "py-mx-hplc"
 version = "0.1.0"
 description = "An unoffical Python wrapper for the SSI-Teledyne Next Generation class HPLC pumps."
 authors = ["Alex W <alex@southsun.tech>"]
+packages = [
+    {include = "py_mx_hplc/"},
+    {include = "py_mx_hplc/**/*.py"}
+]
 
 [tool.poetry.dependencies]
 python = "^3.9,<3.10"

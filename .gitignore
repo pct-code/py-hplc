@@ -9,6 +9,7 @@ __pycache__/
 
 # user defined 
 **.vscode/
+poetry.toml
 
 
 # Distribution / packaging

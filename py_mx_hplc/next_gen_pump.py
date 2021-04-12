@@ -1,5 +1,5 @@
 """Serial port wrapper for Next Generation pumps.
-The code in this file provides a thin Python wrapper around the pump's commands.
+This module provides a thin Python wrapper around the pump's commands.
 It uses properties to provide easy access to commonly used information about the pump.
 It also handles the input/output parsing necessary to deal with
 pumps using different pressure units or flowrate precisions.
@@ -82,7 +82,6 @@ class NextGenPump(NextGenPumpBase):
 
     # bundled info retrieval -- these will return dicts -------------------------------
     # all dicts have a "response" key whose value is the pump's decoded response string
-
     def current_conditions(self) -> dict[str, Union[float, str]]:
         """Returns a dictionary describing the current conditions of the pump.
 
@@ -152,6 +151,10 @@ class NextGenPump(NextGenPumpBase):
         return result
 
     # general properties  ---------------------------------------------
+
+    @property
+    def is_running(self) -> None:
+        return self.current_state()["is running"]
 
     @property
     def stroke_counter(self) -> int:
@@ -265,6 +268,7 @@ class NextGenPump(NextGenPumpBase):
 
     # properties for pumps with a leak sensor ------------------------------------------
 
+    @property
     def leak_detected(self) -> bool:
         """Returns a bool representing if a leak is detected.
         Pumps without a leak sensor always return False.
@@ -275,6 +279,7 @@ class NextGenPump(NextGenPumpBase):
         # OK,LS:<leak>/
         return bool(result["response"].split(":")[1][:-1])
 
+    @property
     def leak_mode(self) -> int:
         """Gets the pump's current leak mode as an int.
 
@@ -287,6 +292,13 @@ class NextGenPump(NextGenPumpBase):
         # could return a descriptive string instead
         # return LEAK_MODES.get(mode)
         return mode
+    
+    @leak_mode.setter
+    def leak_mode(self, mode: int) -> None:
+        # todo test how pump responds to out of bounds
+        # if not mode in (0, 1, 2):
+        #     raise PumpError(f"lm{mode}", None, "Invalid leak mode", self.serial.name)
+        self.command(f"lm{mode}")
 
     # properties for pumps with a solvent select feature ------------------------------
     @property

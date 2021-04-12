@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "py-mx-hplc"
 version = "0.1.0"
-description = "An unoffical Python wrapper for the SSI-Teledyne MX class HPLC pump."
+description = "An unoffical Python wrapper for the SSI-Teledyne Next Generation class HPLC pumps."
 authors = ["Alex W <alex@southsun.tech>"]
 
 [tool.poetry.dependencies]
@@ -14,6 +14,7 @@ pylint = "^2.7.2"
 rope = "^0.18.0"
 mypy = "^0.812"
 isort = "^5.7.0"
+Sphinx = "^3.5.4"
 
 [tool.black]
 line-length = 88

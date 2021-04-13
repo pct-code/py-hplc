@@ -20,4 +20,4 @@ formats:
 python:
   version: 3.9
   install:
-    - requirements: requirements.txt
+  - requirements: requirements.txt

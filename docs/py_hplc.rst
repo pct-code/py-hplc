@@ -1,5 +1,5 @@
 ===========
-py-mx-hplc
+py-hplc
 ===========
 
 Overview

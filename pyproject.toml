@@ -2,6 +2,8 @@
 name = "py-mx-hplc"
 version = "0.1.1"
 description = "An unoffical Python wrapper for the SSI-Teledyne Next Generation class HPLC pumps."
+license = "MIT"
+homepage = "https://github.com/teauxfu/py-mx-hplc"
 authors = ["Alex W <alex@southsun.tech>"]
 packages = [
     {include = "py_mx_hplc/"},

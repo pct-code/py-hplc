@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "py-mx-hplc"
-version = "0.1.0"
+version = "0.1.1"
 description = "An unoffical Python wrapper for the SSI-Teledyne Next Generation class HPLC pumps."
 authors = ["Alex W <alex@southsun.tech>"]
 packages = [

@@ -33,7 +33,6 @@ SOLVENT_COMPRESSIBILITY = {
     "water": 46,
 }
 
-
 class NextGenPump(NextGenPumpBase):
     """Serial port wrapper for Next Generation pumps.
     Commands to the pumps are available as methods on this object.
@@ -93,7 +92,10 @@ class NextGenPump(NextGenPumpBase):
         result = self.command("cc")
         msg = result["response"].split(",")
         # OK,<pressure>,<flow>/
-        result["pressure"] = float(msg[1])
+        if self.pressure_units == "psi":
+            result["pressure"] = int(msg[1])
+        else:
+            result["pressure"] = float(msg[1])
         result["flowrate"] = float(msg[2][:-1])
         return result
 
@@ -111,7 +113,7 @@ class NextGenPump(NextGenPumpBase):
         result["upper limit"] = float(msg[2])
         result["lower limit"] = float(msg[3])
         result["pressure units"] = msg[4]
-        result["is running"] = bool(msg[6])
+        result["is running"] = bool(int(msg[6]))
         return result
 
     def pump_information(self) -> dict[str, Union[float, int, str]]:
@@ -168,7 +170,7 @@ class NextGenPump(NextGenPumpBase):
     # flowrate compensation
     @property
     def flowrate_compensation(self) -> float:
-        """Returns the flowrate in mL per minute as a float."""
+        """Returns the flowrate compensation value as a float representing a percentage."""
         result = self.command("uc")
         # OK,UC:<user_comp>/
         return float(result["response"].split(":")[1][:-1]) / 100
@@ -218,13 +220,17 @@ class NextGenPump(NextGenPumpBase):
 
     # individual properties for pressure enabled pumps ---------------------------------
     @property
-    def pressure(self) -> float:
+    def pressure(self) -> Union[float, int]:
         """Gets the pump's current pressure as a float using the pump's pressure units.
 
         Pressure units are most easily found on a pump instance at .pressure_units
         """
         # OK,<pressure>/
-        return float(self.command("pr")["response"].split(",")[1][:-1])
+        if self.pressure_units == "psi":
+            return int(self.command("pr")["response"].split(",")[1][:-1])
+        else:
+            return float(self.command("pr")["response"].split(",")[1][:-1])
+
 
     # upper and lower pressure limits
     @property

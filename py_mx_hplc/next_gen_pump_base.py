@@ -85,10 +85,10 @@ class NextGenPumpBase:
         # volumetric resolution - used for setting flowrate
         # expect OK,<flow>,<UPL>,<LPL>,<p_units>,0,<R/S>,0/
         response = self.command("cs")["response"]
-        flow = len(response.split(",")[1])
-        if flow == 4:  # eg. "5.00"
+        precision = len(response.split(",")[1].split(".")[1])
+        if precision == 2:  # eg. "5.00"
             self.flowrate_factor = -5  # FI takes microliters/min * 10 as ints
-        else:  # eg. "5.000" -- hopefully
+        elif precision == 3:  # eg. "5.000"
             self.flowrate_factor = -6  # FI takes microliters/min as ints
 
         # for pumps that have a pressure sensor ----------------------------------------
@@ -119,7 +119,7 @@ class NextGenPumpBase:
             raise PumpError(
                 command=command,
                 response=response,
-                message="The pump threw an error in response to a command.",
+                message=f"The pump threw an error '{response}' in response to a command: '{command}'",
                 port=self.serial.name,
             )
 

@@ -7,7 +7,7 @@ This package encapsulates a serial connection with the commands available on SSI
    :caption: Contents
    :maxdepth: -1
 
-   py_mx_hplc   
+   py_hplc   
    pump
    pump_base
    pump_error

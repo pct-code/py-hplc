@@ -1,4 +1,4 @@
-"""Serial port wrapper for MX-class Teledyne pumps.
+"""Serial port wrapper for Next Generation class pumps.
 The code in this file establishes an OS-appropriate serial port and provides
 an interface for communicating with the pumps.
 
@@ -13,7 +13,7 @@ from typing import TYPE_CHECKING, Any
 from serial import SerialException, serial_for_url
 from serial.serialutil import EIGHTBITS, PARITY_NONE, STOPBITS_ONE
 
-from py_mx_hplc.pump_error import PumpError
+from .pump_error import PumpError
 
 if TYPE_CHECKING:
     from logging import Logger

@@ -10,7 +10,7 @@ from __future__ import annotations
 from logging import Logger
 from typing import TYPE_CHECKING
 
-from py_mx_hplc.next_gen_pump_base import NextGenPumpBase
+from .next_gen_pump_base import NextGenPumpBase
 
 if TYPE_CHECKING:
     from typing import Union

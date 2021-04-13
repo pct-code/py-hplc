@@ -1,13 +1,13 @@
 [tool.poetry]
-name = "py-mx-hplc"
-version = "0.1.3"
-description = "An unoffical Python wrapper for the SSI-Teledyne Next Generation MX class HPLC pumps."
+name = "py-hplc"
+version = "0.1.0"
+description = "An unoffical Python wrapper for the SSI-Teledyne Next Generation class HPLC pumps."
 license = "MIT"
-homepage = "https://github.com/teauxfu/py-mx-hplc"
+homepage = "https://github.com/teauxfu/py-hplc"
 authors = ["Alex W <alex@southsun.tech>"]
 packages = [
-    {include = "py_mx_hplc/"},
-    {include = "py_mx_hplc/**/*.py"}
+    {include = "py_hplc/"},
+    {include = "py_hplc/**/*.py"}
 ]
 
 [tool.poetry.dependencies]

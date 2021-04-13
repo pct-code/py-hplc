@@ -18,7 +18,7 @@ sys.path.insert(0, os.path.abspath(".."))
 
 # -- Project information -----------------------------------------------------
 
-project = "py-mx-hplc"
+project = "py-hplc"
 copyright = "2021, Alex Whittington"
 author = "Alex Whittington"
 

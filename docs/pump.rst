@@ -1,5 +1,5 @@
 NextGenPump
 ================
 
-.. autoclass:: py_mx_hplc.next_gen_pump.NextGenPump
+.. autoclass:: py_hplc.next_gen_pump.NextGenPump
     :members:

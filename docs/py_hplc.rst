@@ -28,13 +28,13 @@ Installation
 ============
 The package is available on PyPI::
 
-    python -m pip install py-mx-hplc
+    python -m pip install py-hplc
 
 Using the package
 ==================
 You can open a pump instance like this ::
 
-   >>> from py_mx_hplc import NextGenPump
+   >>> from py_hplc import NextGenPump
    >>> pump = NextGenPump("COM3")  # or "/dev/ttyUSB0", etc.
 
 You can inspect the pump for useful information such as its pressure units, firmware version, max flowrate, etc. ::

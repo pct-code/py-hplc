@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "py-mx-hplc"
-version = "0.1.1"
+version = "0.1.2"
 description = "An unoffical Python wrapper for the SSI-Teledyne Next Generation class HPLC pumps."
 license = "MIT"
 homepage = "https://github.com/teauxfu/py-mx-hplc"
@@ -11,7 +11,7 @@ packages = [
 ]
 
 [tool.poetry.dependencies]
-python = "^3.9,<3.10"
+python = "^3.9"
 pyserial = "^3.5"
 
 [tool.poetry.dev-dependencies]

@@ -99,6 +99,8 @@ These methods are defined in :code:`NextGenPumpBase` and all pump methods rely o
    | The :code:`write` command takes an optional :code:`delay` argument, which defaults to 0.015 s (15 ms). 
    | This delay is thread-blocking and occurs twice: once before the write operation and once before the read operation.
    | While these delays are not strictly necessary, they do make communication more robust. 
+   |
+   | If you need to take lots of pressure measurements very quickly, consider using :code:`write` instead of the :code:`pressure` property.
 
 The connection to the serial port is opened automatically on initialization.
 It can be manually closed when you're done with it. ::

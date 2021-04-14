@@ -170,7 +170,8 @@ class NextGenPump(NextGenPumpBase):
     # flowrate compensation
     @property
     def flowrate_compensation(self) -> float:
-        """Returns the flowrate compensation value as a float representing a percentage."""
+        """Returns the flowrate compensation value as a float representing
+        a percentage."""
         result = self.command("uc")
         # OK,UC:<user_comp>/
         return float(result["response"].split(":")[1][:-1]) / 100
@@ -306,7 +307,6 @@ class NextGenPump(NextGenPumpBase):
         return int(result["response"].split(":")[1][:-1])
         # could return a descriptive string instead
         # return LEAK_MODES.get(int(result["response"].split(":")[1][:-1]))
-        
 
     @leak_mode.setter
     def leak_mode(self, mode: int) -> None:

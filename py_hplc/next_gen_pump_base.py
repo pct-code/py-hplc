@@ -77,7 +77,7 @@ class NextGenPumpBase:
         # pump head
         response = self.command("pi")["response"]
         if "OK," in response:
-            self.head = response.split(',')[4]
+            self.head = response.split(",")[4]
         # max flowrate
         response = self.command("mf")["response"]
         if "OK,MF:" in response:  # expect OK,MF:<max_flow>/
@@ -119,7 +119,10 @@ class NextGenPumpBase:
             raise PumpError(
                 command=command,
                 response=response,
-                message=f"The pump threw an error '{response}' in response to a command: '{command}'",
+                message=(
+                    f"The pump threw an error '{response}'"
+                    f"in response to a command: '{command}'"
+                ),
                 port=self.serial.name,
             )
 
@@ -148,7 +151,8 @@ class NextGenPumpBase:
             # self.serial.write(b"#")
             self.serial.reset_input_buffer()
             self.serial.reset_output_buffer()
-            time.sleep(delay)  # could defer here if async
+            # could defer here if async
+            time.sleep(delay)  # don't get too excited
             # it seems getting pre-encoded strings from a dict is only slightly faster,
             # and only some of the time, when compared to just encoding args on the fly
             self.serial.write(msg.encode() + COMMAND_END)
@@ -157,7 +161,7 @@ class NextGenPumpBase:
             self.serial.flush()
             if msg == "#":  # this won't give a response
                 break
-            time.sleep(delay)  # could defer here if async
+            time.sleep(delay)
             response = self.read()
             tries += 1
         return response

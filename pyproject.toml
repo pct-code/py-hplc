@@ -22,15 +22,10 @@ mypy = "^0.812"
 isort = "^5.7.0"
 Sphinx = "^3.5.4"
 sphinx-rtd-theme = "^0.5.2"
+snooty = "^0.8.2-alpha.0"
 
 [tool.black]
 line-length = 88
-
-[tool.pylint.design]
-max-parents = 10
-
-[tool.pylint.reports]
-output-format = "colorized"
 
 [tool.pylint.format]
 max-line-length = 88

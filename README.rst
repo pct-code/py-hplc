@@ -8,7 +8,7 @@ An unoffical Python wrapper for the SSI-Teledyne Next Generation class HPLC pump
 
 - `Download page`_ 
 - `API Documentation`_
-- `Official pump documentation_`
+- `Official pump documentation`_
 
 MIT license, (C) 2021 Alex Whittington <alex@southsun.tech>
 

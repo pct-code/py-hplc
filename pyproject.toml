@@ -1,10 +1,20 @@
 [tool.poetry]
 name = "py-hplc"
-version = "0.1.1"
+version = "0.1.2"
 description = "An unoffical Python wrapper for the SSI-Teledyne Next Generation class HPLC pumps."
 license = "MIT"
-homepage = "https://github.com/teauxfu/py-hplc"
+repository = "https://github.com/teauxfu/py-hplc"
+documentation = "https://py-hplc.readthedocs.io/en/latest/"
+readme = "README.rst"
 authors = ["Alex W <alex@southsun.tech>"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Scientific/Engineering :: Interface Engine/Protocol Translator",
+    "Topic :: System :: Hardware :: Universal Serial Bus (USB)",
+    "Topic :: Terminals :: Serial"
+]
+
 packages = [
     {include = "py_hplc/"},
     {include = "py_hplc/**/*.py"}

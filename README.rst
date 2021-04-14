@@ -6,8 +6,9 @@ Overview
 ==========
 An unoffical Python wrapper for the SSI-Teledyne Next Generation class HPLC pumps.
 
-- Download page: https://pypi.org/project/py-hplc/
-- Documentation: https://py-hplc.readthedocs.io/en/latest/
+- `Download page`_ 
+- `API Documentation`_
+- `Official pump documentation_`
 
 MIT license, (C) 2021 Alex Whittington <alex@southsun.tech>
 
@@ -17,6 +18,9 @@ The package is available on PyPI.
 
 ``python -m pip install py-hplc``
 
+.. _`Download page`: https://pypi.org/project/py-hplc/
+.. _`API Documentation`: https://py-hplc.readthedocs.io/en/latest/
+.. _`Official pump documentation`: https://www.teledynessi.com/Manuals%20%20Guides/Product%20Guides%20and%20Resources/Serial%20Pump%20Control%20for%20Next%20Generation%20SSI%20Pumps.pdf
 
 
 .. |build-status| image:: https://github.com/teauxfu/py-hplc/actions/workflows/build.yml/badge.svg

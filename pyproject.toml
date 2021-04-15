@@ -1,10 +1,20 @@
 [tool.poetry]
 name = "py-hplc"
-version = "0.1.0"
+version = "0.1.2"
 description = "An unoffical Python wrapper for the SSI-Teledyne Next Generation class HPLC pumps."
 license = "MIT"
-homepage = "https://github.com/teauxfu/py-hplc"
+repository = "https://github.com/teauxfu/py-hplc"
+documentation = "https://py-hplc.readthedocs.io/en/latest/"
+readme = "README.rst"
 authors = ["Alex W <alex@southsun.tech>"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Scientific/Engineering :: Interface Engine/Protocol Translator",
+    "Topic :: System :: Hardware :: Universal Serial Bus (USB)",
+    "Topic :: Terminals :: Serial"
+]
+
 packages = [
     {include = "py_hplc/"},
     {include = "py_hplc/**/*.py"}
@@ -22,15 +32,10 @@ mypy = "^0.812"
 isort = "^5.7.0"
 Sphinx = "^3.5.4"
 sphinx-rtd-theme = "^0.5.2"
+snooty = "^0.8.2-alpha.0"
 
 [tool.black]
 line-length = 88
-
-[tool.pylint.design]
-max-parents = 10
-
-[tool.pylint.reports]
-output-format = "colorized"
 
 [tool.pylint.format]
 max-line-length = 88

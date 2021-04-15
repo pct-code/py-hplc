@@ -33,6 +33,7 @@ SOLVENT_COMPRESSIBILITY = {
     "water": 46,
 }
 
+
 class NextGenPump(NextGenPumpBase):
     """Serial port wrapper for Next Generation pumps.
     Commands to the pumps are available as methods on this object.
@@ -154,7 +155,7 @@ class NextGenPump(NextGenPumpBase):
         result["lower pressure fault"] = bool(int(msg[3][:-1]))
         return result
 
-    # general properties  ---------------------------------------------
+    # general properties ---------------------------------------------------------------
     @property
     def is_running(self) -> None:
         """Returns a bool representing if the pump is running or not."""
@@ -170,7 +171,8 @@ class NextGenPump(NextGenPumpBase):
     # flowrate compensation
     @property
     def flowrate_compensation(self) -> float:
-        """Returns the flowrate compensation value as a float representing a percentage."""
+        """Returns the flowrate compensation value as a float representing
+        a percentage."""
         result = self.command("uc")
         # OK,UC:<user_comp>/
         return float(result["response"].split(":")[1][:-1]) / 100
@@ -225,12 +227,12 @@ class NextGenPump(NextGenPumpBase):
 
         Pressure units are most easily found on a pump instance at .pressure_units
         """
+        # beware using this on a tight loop https://stackoverflow.com/questions/6618002
         # OK,<pressure>/
         if self.pressure_units == "psi":
             return int(self.command("pr")["response"].split(",")[1][:-1])
         else:
             return float(self.command("pr")["response"].split(",")[1][:-1])
-
 
     # upper and lower pressure limits
     @property
@@ -293,28 +295,17 @@ class NextGenPump(NextGenPumpBase):
         # OK,LS:<leak>/
         return bool(int(result["response"].split(":")[1][:-1]))
 
-    @property
-    def leak_mode(self) -> int:
-        """Gets/sets the pump's current leak mode as an int.
-        See LEAK_MODES for a map.
+    def set_leak_mode(self, mode: int) -> int:
+        """Sets the pump's current leak mode as an int.
 
-        Returns:
-            int: 0 if disabled. 1 if detected leak will fault. 2 if it will not fault.
+        0 if disabled. 1 if detected leak will fault. 2 if it will not fault.
         """
-        result = self.command("lm")
-        # OK,LM:<mode>/
-        return int(result["response"].split(":")[1][:-1])
-        # could return a descriptive string instead
-        # return LEAK_MODES.get(int(result["response"].split(":")[1][:-1]))
-        
-
-    @leak_mode.setter
-    def leak_mode(self, mode: int) -> None:
-        """Sets the pump's leak mode."""
-        # todo test how pump responds to out of bounds
         self.command(f"lm{mode}")
+        # OK,LM:<mode>/
+        # there seems to not be a way to query the current value without setting it
 
     # properties for pumps with a solvent select feature ------------------------------
+    # todo these need testing
     @property
     def solvent(self) -> int:
         """Gets/sets the solvent compressibility value in 10 ** -6 per bar.

@@ -3,6 +3,9 @@ This module provides a thin Python wrapper around the pump's commands.
 It uses properties to provide easy access to commonly used information about the pump.
 It also handles the input/output parsing necessary to deal with
 pumps using different pressure units or flowrate precisions.
+
+When initializing the pump, you may pass in a reference to a logging.Logger instance as
+the second argument.
 """
 
 from __future__ import annotations

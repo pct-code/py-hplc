@@ -136,6 +136,9 @@ class NextGenPumpBase:
 
         Returns the pump's response string.
 
+        Raises:
+            PumpError: An exception describing what went wrong
+
         Args:
             msg (str): The message to be sent
             delay (float, optional): A float in seconds. Defaults to 0.015.
@@ -144,9 +147,9 @@ class NextGenPumpBase:
             str: the pump's decoded response string
         """
         response = ""
-        tries = 0
+        tries = 1
         # pump docs recommend 3 attempts
-        while tries < 3 and "OK" not in response:
+        while tries <= 3 and "OK" not in response:
             # this would clear the pump's command buffer, but shouldn't be relied upon
             # self.serial.write(b"#")
             self.serial.reset_input_buffer()
@@ -164,15 +167,24 @@ class NextGenPumpBase:
             time.sleep(delay)
             response = self.read()
             tries += 1
+
+        if response == "" and msg != "#":
+            raise PumpError(
+                command=msg,
+                response=response,
+                message=(f"Couldn't get a message from the pump in response to {msg}"),
+                port=self.serial.name,
+            )
+
         return response
 
     def read(self) -> str:
         """Reads a single message from the pump."""
         response = ""
-        tries = 0
-        while tries < 3 and "/" not in response:
+        tries = 1
+        while tries <= 3 and "/" not in response:
             response = self.serial.read_until(MESSAGE_END).decode()
-            self.logger.debug("Got response: %s", response)
+            self.logger.debug("Got response: %s (attempt %s/3)", response, tries)
             tries += 1
         return response
 

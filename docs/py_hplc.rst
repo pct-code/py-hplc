@@ -97,18 +97,18 @@ You may pass in a logging.Logger instance as a second, optional argument when in
    >>> logger = logging.getLogger()
    >>> pump = NextGenPump("COM3", logger)
    INFO:root.COM3:Serial port connected
-   DEBUG:root.COM3:Sent id (attempt 0/3)
-   DEBUG:root.COM3:Got response: OK, 191017 Version 2.0.8/
-   DEBUG:root.COM3:Sent pi (attempt 0/3)
-   DEBUG:root.COM3:Got response: OK,10.00,0,0,S10S,0,1,0,0,0,0,0,0,0,0,0,0,0/
-   DEBUG:root.COM3:Sent mf (attempt 0/3)
-   DEBUG:root.COM3:Got response: OK,MF:10.00/
-   DEBUG:root.COM3:Sent cs (attempt 0/3)
-   DEBUG:root.COM3:Got response: OK,10.00,5000,0000,psi,0,0,0/
-   DEBUG:root.COM3:Sent pu (attempt 0/3)
-   DEBUG:root.COM3:Got response: OK,psi/
-   DEBUG:root.COM3:Sent mp (attempt 0/3)
-   DEBUG:root.COM3:Got response: OK,MP:5000/
+   DEBUG:root.COM3:Sent id (attempt 1/3)
+   DEBUG:root.COM3:Got response: OK, 191017 Version 2.0.8/ (attempt 1/3)
+   DEBUG:root.COM3:Sent pi (attempt 1/3)
+   DEBUG:root.COM3:Got response: OK,10.00,0,0,S10S,0,1,0,0,0,0,0,0,0,0,0,0,0/ (attempt 1/3)
+   DEBUG:root.COM3:Sent mf (attempt 1/3)
+   DEBUG:root.COM3:Got response: OK,MF:10.00/ (attempt 1/3)
+   DEBUG:root.COM3:Sent cs (attempt 1/3)
+   DEBUG:root.COM3:Got response: OK,10.00,5000,0000,psi,0,0,0/ (attempt 1/3)
+   DEBUG:root.COM3:Sent pu (attempt 1/3)
+   DEBUG:root.COM3:Got response: OK,psi/ (attempt 1/3)
+   DEBUG:root.COM3:Sent mp (attempt 1/3)
+   DEBUG:root.COM3:Got response: OK,MP:5000/ (attempt 1/3)
 
 Talking with the pumps directly
 --------------------------------

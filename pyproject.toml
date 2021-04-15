@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "py-hplc"
-version = "0.1.2"
+version = "0.1.3"
 description = "An unoffical Python wrapper for the SSI-Teledyne Next Generation class HPLC pumps."
 license = "MIT"
 repository = "https://github.com/teauxfu/py-hplc"

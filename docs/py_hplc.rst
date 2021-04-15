@@ -93,7 +93,7 @@ You may pass in a logging.Logger instance as a second, optional argument when in
    >>> import sys
    >>> import logging
    >>> from py_hplc import NextGenPump
-   >>> logging.basicConfig(stream = sys.stdout, level=logging.DEBUG)
+   >>> logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
    >>> logger = logging.getLogger()
    >>> pump = NextGenPump("COM3", logger)
    INFO:root.COM3:Serial port connected

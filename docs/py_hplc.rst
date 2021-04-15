@@ -82,7 +82,36 @@ The interface behaves in a typical way. Pumps can be inspected or configured wit
         >>> pump.pump_information()["response"]
         'OK,10.00,0,0,S10S,0,1,0,0,0,0,0,0,0,0,0,0,0/'
 
+Advanced usage
+===============
 
+Custom logging
+---------------
+
+You may pass in a logging.Logger instance as a second, optional argument when initializing a pump. ::
+
+   >>> import sys
+   >>> import logging
+   >>> from py_hplc import NextGenPump
+   >>> logging.basicConfig(stream = sys.stdout, level=logging.DEBUG)
+   >>> logger = logging.getLogger()
+   >>> pump = NextGenPump("COM3", logger)
+   INFO:root.COM3:Serial port connected
+   DEBUG:root.COM3:Sent id (attempt 0/3)
+   DEBUG:root.COM3:Got response: OK, 191017 Version 2.0.8/
+   DEBUG:root.COM3:Sent pi (attempt 0/3)
+   DEBUG:root.COM3:Got response: OK,10.00,0,0,S10S,0,1,0,0,0,0,0,0,0,0,0,0,0/
+   DEBUG:root.COM3:Sent mf (attempt 0/3)
+   DEBUG:root.COM3:Got response: OK,MF:10.00/
+   DEBUG:root.COM3:Sent cs (attempt 0/3)
+   DEBUG:root.COM3:Got response: OK,10.00,5000,0000,psi,0,0,0/
+   DEBUG:root.COM3:Sent pu (attempt 0/3)
+   DEBUG:root.COM3:Got response: OK,psi/
+   DEBUG:root.COM3:Sent mp (attempt 0/3)
+   DEBUG:root.COM3:Got response: OK,MP:5000/
+
+Talking with the pumps directly
+--------------------------------
 
 A somewhat lower-level interface is provided on the pump object's :code:`command` and :code:`write` methods. 
 These methods are defined in :code:`NextGenPumpBase` and all pump methods rely on these internally. 
@@ -100,11 +129,19 @@ These methods are defined in :code:`NextGenPumpBase` and all pump methods rely o
    | This delay is thread-blocking and occurs twice: once before the write operation and once before the read operation.
    | While these delays are not strictly necessary, they do make communication more robust. 
    |
-   | If you need to take lots of pressure measurements very quickly, consider using :code:`write` instead of the :code:`pressure` property.
+   | If you need to take lots of pressure measurements very quickly on a tight loop, consider using :code:`write` instead of the :code:`pressure` property.
+
+
 
 The connection to the serial port is opened automatically on initialization.
-It can be manually closed when you're done with it. ::
+Its configuration defaults to the specifications in the pump's official documentation.
+If you really need to reconfigure the port, you may access it at the :code:`serial` instance attribute.
+It can be manually closed when you're done with it.
+Using the pump instance as a context manager is not currently supported.
+::
 
+   >>> pump.serial
+   Serial<id=0x7a96998dc0, open=True>(port='COM3', baudrate=9600, bytesize=8, parity='N', stopbits=1, timeout=0.1, xonxoff=False, rtscts=False, dsrdtr=False)
    >>> pump.close()
    >>> pump.is_open
    False

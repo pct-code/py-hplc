@@ -16,7 +16,7 @@ Installation
 =============
 The package is available on PyPI.
 
-``python -m pip install py-hplc``
+``pip install py-hplc``
 
 .. _`Download page`: https://pypi.org/project/py-hplc/
 .. _`API Documentation`: https://py-hplc.readthedocs.io/en/latest/

@@ -5,7 +5,7 @@ py-hplc
 Overview
 ===========
 
-This package encapsulates a serial connection with the commands available on SSI-Teledyne Next Generation HPLC pumps.
+This package wraps a serial connection with a thin Python interface to the commands available on SSI-Teledyne Next Generation HPLC pumps.
 
 Some data about the pumps, such as pressure and flowrate, are exposed as Python properties.
 This abstraction alleviates some of the inconsistencies involved in interfacing with various models of pump, and makes observing the pumps generally easier.
@@ -26,9 +26,9 @@ This package is 100% pure Python. Its only dependency is the fantastic `pySerial
 
 Installation
 ============
-The package is available on PyPI::
+The package is available on PyPI ::
 
-    python -m pip install py-hplc
+    pip install py-hplc
 
 Using the package
 ==================

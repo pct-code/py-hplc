@@ -1,7 +1,7 @@
 Welcome to the documentation for py-hplc!
 =============================================
 
-This package encapsulates a serial connection with the commands available on SSI-Teledyne Next Generation HPLC pumps.
+This package wraps a serial connection with a thin Python interface to the commands available on SSI-Teledyne Next Generation HPLC pumps.
 
 .. toctree::
    :caption: Contents

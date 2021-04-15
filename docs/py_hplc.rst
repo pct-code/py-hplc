@@ -88,7 +88,7 @@ Advanced usage
 Custom logging
 ---------------
 
-You may pass in a reference to a logging.Logger instance as a second, optional argument when initializing a pump. ::
+You may pass in a reference to a :code:`logging.Logger` instance as a second, optional argument when initializing a pump. ::
 
    >>> import sys
    >>> import logging

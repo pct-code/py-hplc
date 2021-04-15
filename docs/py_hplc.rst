@@ -88,12 +88,12 @@ Advanced usage
 Custom logging
 ---------------
 
-You may pass in a logging.Logger instance as a second, optional argument when initializing a pump. ::
+You may pass in a reference to a logging.Logger instance as a second, optional argument when initializing a pump. ::
 
    >>> import sys
    >>> import logging
    >>> from py_hplc import NextGenPump
-   >>> logging.basicConfig(stream = sys.stdout, level=logging.DEBUG)
+   >>> logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
    >>> logger = logging.getLogger()
    >>> pump = NextGenPump("COM3", logger)
    INFO:root.COM3:Serial port connected

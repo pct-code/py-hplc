@@ -13,7 +13,7 @@ from __future__ import annotations
 from logging import Logger
 from typing import TYPE_CHECKING
 
-from .next_gen_pump_base import NextGenPumpBase
+from py_hplc.pump_base import NextGenPumpBase
 
 if TYPE_CHECKING:
     from typing import Union
@@ -285,7 +285,6 @@ class NextGenPump(NextGenPumpBase):
         self.command(f"lp{limit}")
 
     # properties for pumps with a leak sensor ------------------------------------------
-
     @property
     def leak_detected(self) -> bool:
         """Returns a bool representing if a leak is detected.
@@ -300,13 +299,17 @@ class NextGenPump(NextGenPumpBase):
 
     def set_leak_mode(self, mode: int) -> int:
         """Sets the pump's current leak mode as an int.
-
+        
         0 if disabled. 1 if detected leak will fault. 2 if it will not fault.
         """
-        self.command(f"lm{mode}")
-        # OK,LM:<mode>/
         # there seems to not be a way to query the current value without setting it
-
+        if not mode in (0, 1, 2):
+            raise ValueError(
+                f"Invalid leak mode: {mode}. Choose from 0 (disabled), 1 (will fault),"
+                "or 2 (won't fault)."
+            )
+        self.command(f"lm{mode}")  # OK,LM:<mode>/
+        
     # properties for pumps with a solvent select feature ------------------------------
     # todo these need testing
     @property
@@ -321,7 +324,7 @@ class NextGenPump(NextGenPumpBase):
 
     @solvent.setter
     def solvent(self, value: Union[str, int]) -> None:
-        """Gets/sets the solvent compressibility value in 10 ** -6 per bar."""
+        """Gets/sets the solvent compressibility value as an int in 10 ** -6 per bar."""
         # if we got a solvent name string, convert it to an int
         if value in SOLVENT_COMPRESSIBILITY.keys():
             value = SOLVENT_COMPRESSIBILITY.get(value)

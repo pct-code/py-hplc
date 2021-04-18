@@ -13,7 +13,7 @@ from typing import TYPE_CHECKING, Any
 from serial import SerialException, serial_for_url
 from serial.serialutil import EIGHTBITS, PARITY_NONE, STOPBITS_ONE
 
-from .pump_error import PumpError
+from py_hplc.pump_error import PumpError
 
 if TYPE_CHECKING:
     from logging import Logger

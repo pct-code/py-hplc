@@ -13,11 +13,10 @@ from __future__ import annotations
 from logging import Logger
 from typing import TYPE_CHECKING
 
-from .next_gen_pump_base import NextGenPumpBase
+from py_hplc.pump_base import NextGenPumpBase
 
 if TYPE_CHECKING:
     from typing import Union
-
 
 # these are more or less useful than an int
 # currently unused
@@ -303,12 +302,14 @@ class NextGenPump(NextGenPumpBase):
 
         0 if disabled. 1 if detected leak will fault. 2 if it will not fault.
         """
-        self.command(f"lm{mode}")
-        # OK,LM:<mode>/
         # there seems to not be a way to query the current value without setting it
+        if mode not in (0, 1, 2):
+            raise ValueError("The passed mode must be 0, 1, or 2.")
+        
+        self.command(f"lm{mode}") # OK,LM:<mode>/
 
     # properties for pumps with a solvent select feature ------------------------------
-    # todo these need testing
+    # todo solvent select commands need testing
     @property
     def solvent(self) -> int:
         """Gets/sets the solvent compressibility value in 10 ** -6 per bar.

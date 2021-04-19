@@ -2,6 +2,10 @@
 Changelog
 =========
 
+v0.1.4
+------
+- Improved read/write instructions and pump identification
+
 v0.1.3
 ------
 - Improved debug logging

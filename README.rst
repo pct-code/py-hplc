@@ -82,6 +82,6 @@ See the `API Documentation`_ for more usage examples.
   :target: https://github.com/psf/black
   :alt: Style
   
-.. |pylint| image:: https://mperlet.github.io/pybadge/badges/9.86.svg
+.. |pylint| image:: https://mperlet.github.io/pybadge/badges/9.87.svg
   :target: https://github.com/mperlet/pybadge
   :alt: Vanilla Pylint Score

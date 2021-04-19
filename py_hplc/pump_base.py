@@ -58,8 +58,8 @@ class NextGenPumpBase:
         """Opens the serial port associated with the pump.
 
         Raises: SerialException: An exception describing what went wrong. In this case,
-        we failed to open the serial port. 
-        """        
+        we failed to open the serial port.
+        """
         try:
             self.serial.open()
             self.logger.info("Serial port connected")
@@ -134,7 +134,7 @@ class NextGenPumpBase:
 
         A response will be returned after at least (2 * delay) seconds.
         Delay defaults to 0.015 s per pump documentation.
-        If we fail to get a "OK" response, we will wait 0.1 s before attempting again, 
+        If we fail to get a "OK" response, we will wait 0.1 s before attempting again,
         up to 3 attempts.
 
         Returns the pump's response string.
@@ -159,7 +159,7 @@ class NextGenPumpBase:
             self.serial.reset_input_buffer()
             self.serial.reset_output_buffer()
             time.sleep(delay)  # let the buffers clear (could defer here if async)
-            
+
             # it seems getting pre-encoded strings from a dict is only slightly faster,
             # and only some of the time, when compared to just encoding args on the fly
             self.serial.write(msg.encode() + b"\r")
@@ -167,7 +167,7 @@ class NextGenPumpBase:
             self.serial.flush()  # sleeps on a tight loop until everything is written
             if msg == "#":  # this won't give a response
                 break
-            
+
             time.sleep(delay)  # let the pump respond
             response = self.read()
             if "OK" not in response:  # need to retry

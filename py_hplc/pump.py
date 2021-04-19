@@ -298,7 +298,7 @@ class NextGenPump(NextGenPumpBase):
 
     def set_leak_mode(self, mode: int) -> int:
         """Sets the pump's current leak mode as an int.
-        
+
         0 if disabled. 1 if detected leak will fault. 2 if it will not fault.
         """
         # there seems to not be a way to query the current value without setting it
@@ -308,7 +308,7 @@ class NextGenPump(NextGenPumpBase):
                 "or 2 (won't fault)."
             )
         self.command(f"lm{mode}")  # OK,LM:<mode>/
-        
+
     # properties for pumps with a solvent select feature ------------------------------
     # todo solvent select commands need testing
     @property

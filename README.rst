@@ -1,6 +1,6 @@
-===============================================
-py-hplc |build-status| |docs| |pylint| |style| 
-===============================================
+=====================================================================
+py-hplc |license| |python| | |pypi| |build-status| |docs| | |pylint| |style| 
+=====================================================================
 
 Overview
 ==========
@@ -70,6 +70,16 @@ See the `API Documentation`_ for more usage examples.
 
 .. _`Official pump documentation`: https://www.teledynessi.com/Manuals%20%20Guides/Product%20Guides%20and%20Resources/Serial%20Pump%20Control%20for%20Next%20Generation%20SSI%20Pumps.pdf
 
+.. |license| image:: https://img.shields.io/github/license/teauxfu/py-hplc 
+  :target: https://github.com/teauxfu/py-hplc/blob/main/LICENSE.txt
+  :alt: GitHub
+
+.. |python| image:: https://img.shields.io/pypi/pyversions/py-hplc   
+  :alt: PyPI - Python Version
+  
+.. |pypi| image:: https://img.shields.io/pypi/v/py-hplc   
+  :alt: PyPI
+
 .. |build-status| image:: https://github.com/teauxfu/py-hplc/actions/workflows/build.yml/badge.svg
   :target: https://github.com/teauxfu/py-hplc/actions/workflows/build.yml
   :alt: Build Status
@@ -85,3 +95,4 @@ See the `API Documentation`_ for more usage examples.
 .. |pylint| image:: https://mperlet.github.io/pybadge/badges/9.87.svg
   :target: https://github.com/mperlet/pybadge
   :alt: Vanilla Pylint Score
+  

@@ -18,9 +18,7 @@ The package is available on PyPI.
 
 ``pip install py-hplc``
 
-.. _`Download page`: https://pypi.org/project/py-hplc/
-.. _`API Documentation`: https://py-hplc.readthedocs.io/en/latest/
-.. _`Official pump documentation`: https://www.teledynessi.com/Manuals%20%20Guides/Product%20Guides%20and%20Resources/Serial%20Pump%20Control%20for%20Next%20Generation%20SSI%20Pumps.pdf
+
 
 Using the package
 ==================
@@ -64,6 +62,13 @@ The interface behaves in a typical way. Pumps can be inspected or configured wit
    >>> pump.read_faults()
    {'response': 'OK,0,0,0/', 'motor stall fault': False, 'upper pressure fault': False, 'lower pressure fault': False}
 
+See the `API Documentation`_ for more usage examples.
+
+.. _`Download page`: https://pypi.org/project/py-hplc/
+
+.. _`API Documentation`: https://py-hplc.readthedocs.io/en/latest/
+
+.. _`Official pump documentation`: https://www.teledynessi.com/Manuals%20%20Guides/Product%20Guides%20and%20Resources/Serial%20Pump%20Control%20for%20Next%20Generation%20SSI%20Pumps.pdf
 
 .. |build-status| image:: https://github.com/teauxfu/py-hplc/actions/workflows/build.yml/badge.svg
   :target: https://github.com/teauxfu/py-hplc/actions/workflows/build.yml

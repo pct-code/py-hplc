@@ -19,10 +19,6 @@ if TYPE_CHECKING:
     from logging import Logger
 
 
-COMMAND_END = b"\r"  # terminates messages sent
-MESSAGE_END = b"/"  # terminates messages received
-
-
 class NextGenPumpBase:
     """Serial port wrapper for MX-class Teledyne pumps."""
 
@@ -59,16 +55,21 @@ class NextGenPumpBase:
         self.identify()  # populate attributes, takes about 0.16 s on avg
 
     def open(self) -> None:
-        """Open the serial port associated with the pump."""
+        """Opens the serial port associated with the pump.
+
+        Raises: SerialException: An exception describing what went wrong. In this case,
+        we failed to open the serial port. 
+        """        
         try:
             self.serial.open()
             self.logger.info("Serial port connected")
         except SerialException as err:
             self.logger.critical("Could not open a serial connection")
             self.logger.exception(err)
+            raise
 
     def identify(self):
-        """Get persistent pump properties."""
+        """Gets persistent pump properties."""
         # general properties -----------------------------------------------------------
         # firmware
         response = self.write("id")
@@ -82,7 +83,7 @@ class NextGenPumpBase:
         response = self.write("mf")
         if "OK,MF:" in response:  # expect OK,MF:<max_flow>/
             self.max_flowrate = float(response.split(":")[1][:-1])
-        # volumetric resolution - used for setting flowrate
+        # volumetric resolution - used for setting flowrates later
         # expect OK,<flow>,<UPL>,<LPL>,<p_units>,0,<R/S>,0/
         response = self.write("cs")
         precision = len(response.split(",")[1].split(".")[1])
@@ -107,7 +108,8 @@ class NextGenPumpBase:
             command (str): The message to be sent as bytes
 
         Raises:
-            PumpError: An exception describing what went wrong
+            PumpError: An exception describing what went wrong. In this case, the pump
+            reponded with an error code.
 
         Returns:
             dict[str, Any]: A dictionary containing at least a "response" key
@@ -130,13 +132,16 @@ class NextGenPumpBase:
     def write(self, msg: str, delay: float = 0.015) -> str:
         """Write a command to the pump.
 
-        A response will be returned after 2 * delay seconds.
+        A response will be returned after at least (2 * delay) seconds.
         Delay defaults to 0.015 s per pump documentation.
+        If we fail to get a "OK" response, we will wait 0.1 s before attempting again, 
+        up to 3 attempts.
 
         Returns the pump's response string.
 
         Raises:
-            PumpError: An exception describing what went wrong
+            PumpError: An exception describing what went wrong. In this case, we
+            couldn't get a response.
 
         Args:
             msg (str): The message to be sent
@@ -148,25 +153,31 @@ class NextGenPumpBase:
         response = ""
         tries = 1
         # pump docs recommend 3 attempts
-        while tries <= 3 and "OK" not in response:
+        while tries <= 3:
             # this would clear the pump's command buffer, but shouldn't be relied upon
             # self.serial.write(b"#")
             self.serial.reset_input_buffer()
             self.serial.reset_output_buffer()
-            # could defer here if async
-            time.sleep(delay)  # don't get too excited
+            time.sleep(delay)  # let the buffers clear (could defer here if async)
+            
             # it seems getting pre-encoded strings from a dict is only slightly faster,
             # and only some of the time, when compared to just encoding args on the fly
-            self.serial.write(msg.encode() + COMMAND_END)
+            self.serial.write(msg.encode() + b"\r")
             self.logger.debug("Sent %s (attempt %s/3)", msg, tries)
-            # this sleeps on a tight loop until everything is written
-            self.serial.flush()
+            self.serial.flush()  # sleeps on a tight loop until everything is written
             if msg == "#":  # this won't give a response
                 break
-            time.sleep(delay)
+            
+            time.sleep(delay)  # let the pump respond
             response = self.read()
-            tries += 1
+            if "OK" not in response:  # need to retry
+                tries += 1
+                time.sleep(0.1)  # recommended delay between successive transmissions
+                continue
+            else:
+                break
 
+        # let's throw an error if we couldn't get a response
         if response == "" and msg != "#":
             raise PumpError(
                 command=msg,
@@ -182,7 +193,7 @@ class NextGenPumpBase:
         response = ""
         tries = 1
         while tries <= 3 and "/" not in response:
-            response = self.serial.read_until(MESSAGE_END).decode()
+            response = self.serial.read_until(b"/").decode()
             self.logger.debug("Got response: %s (attempt %s/3)", response, tries)
             tries += 1
         return response

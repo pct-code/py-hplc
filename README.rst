@@ -1,5 +1,5 @@
 =====================================================================
-py-hplc |license| |python| | |pypi| |build-status| |docs| | |pylint| |style| 
+py-hplc |license| |python| |pypi| |build-status| |docs| |pylint| |style| 
 =====================================================================
 
 Overview

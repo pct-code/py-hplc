@@ -23,7 +23,7 @@ The package is available on PyPI.
 Using the package
 ==================
 
-.. image:: docs/example_usage.gif
+.. image:: https://raw.githubusercontent.com/teauxfu/py-hplc/main/docs/example_usage.gif
   :alt: gif demonstrating example usage
 
 You can open a pump instance like this ::
@@ -82,6 +82,7 @@ See the `API Documentation`_ for more usage examples.
   :alt: PyPI - Python Version
   
 .. |pypi| image:: https://img.shields.io/pypi/v/py-hplc   
+  :target: https://pypi.org/project/py-hplc/
   :alt: PyPI
 
 .. |build-status| image:: https://github.com/teauxfu/py-hplc/actions/workflows/build.yml/badge.svg
@@ -89,7 +90,7 @@ See the `API Documentation`_ for more usage examples.
   :alt: Build Status
 
 .. |docs| image:: https://readthedocs.org/projects/pip/badge/?version=stable
-  :target: https://pip.pypa.io/en/stable/?badge=stable
+  :target: https://py-hplc.readthedocs.io/en/latest/
   :alt: Documentation Status
 
 .. |style| image:: https://img.shields.io/badge/code%20style-black-000000.svg

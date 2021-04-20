@@ -22,6 +22,10 @@ The package is available on PyPI.
 
 Using the package
 ==================
+
+.. image:: docs/example_usage.gif
+  :alt: gif demonstrating example usage
+
 You can open a pump instance like this ::
 
    >>> from py_hplc import NextGenPump

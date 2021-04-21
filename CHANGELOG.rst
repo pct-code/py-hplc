@@ -2,6 +2,10 @@
 Changelog
 =========
 
+v0.1.5
+------
+- Minor performance improvement to pump's write operation
+
 v0.1.4
 ------
 - Improved read/write instructions and pump identification

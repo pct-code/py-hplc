@@ -7,7 +7,7 @@ an interface for communicating with the pumps.
 from __future__ import annotations
 
 import logging
-import time
+from time import sleep
 from typing import TYPE_CHECKING, Any
 
 from serial import SerialException, serial_for_url
@@ -158,24 +158,22 @@ class NextGenPumpBase:
             # self.serial.write(b"#")
             self.serial.reset_input_buffer()
             self.serial.reset_output_buffer()
-            time.sleep(delay)  # let the buffers clear (could defer here if async)
+            sleep(delay)  # let the buffers clear (could defer here if async)
 
             # it seems getting pre-encoded strings from a dict is only slightly faster,
             # and only some of the time, when compared to just encoding args on the fly
             self.serial.write(msg.encode() + b"\r")
             self.logger.debug("Sent %s (attempt %s/3)", msg, tries)
             self.serial.flush()  # sleeps on a tight loop until everything is written
+
             if msg == "#":  # this won't give a response
                 break
-
-            time.sleep(delay)  # let the pump respond
+            sleep(delay)  # let the pump respond
             response = self.read()
-            if "OK" not in response:  # need to retry
-                tries += 1
-                time.sleep(0.1)  # recommended delay between successive transmissions
-                continue
-            else:
+            if "OK" in response:  # no need to retry
                 break
+            tries += 1
+            sleep(0.1)  # recommended delay between successive transmissions
 
         # let's throw an error if we couldn't get a response
         if response == "" and msg != "#":

@@ -23,7 +23,7 @@ The package is available on PyPI.
 Using the package
 ==================
 
-.. image:: https://raw.githubusercontent.com/teauxfu/py-hplc/main/docs/example_usage.gif
+.. image:: https://raw.githubusercontent.com/teauxfu/py-hplc/main/docs/demo.gif
   :alt: gif demonstrating example usage
 
 You can open a pump instance like this ::

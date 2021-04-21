@@ -89,7 +89,7 @@ class NextGenPumpBase:
         precision = len(response.split(",")[1].split(".")[1])
         if precision == 2:  # eg. "5.00"
             self.flowrate_factor = -5  # FI takes microliters/min * 10 as ints
-        elif precision == 3:  # eg. "5.000"
+        else:  # eg. "5.000"
             self.flowrate_factor = -6  # FI takes microliters/min as ints
         # for pumps that have a pressure sensor ----------------------------------------
         # pressure units

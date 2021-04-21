@@ -2,6 +2,12 @@
 Changelog
 =========
 
+v0.1.6
+------
+- Yet another minor performance improvement to write operations
+- Minor performance improvement to read operations
+- Cleaning up some code comments
+
 v0.1.5
 ------
 - Minor performance improvement to pump's write operation

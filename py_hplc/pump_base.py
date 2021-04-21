@@ -152,24 +152,21 @@ class NextGenPumpBase:
         """
         response = ""
         tries = 1
-        # pump docs recommend 3 attempts
-        while tries <= 3:
+        cmd = "".join((msg, "\r")).encode()  # defaults to utf-8
+        while tries <= 3:  # pump docs recommend 3 attempts
             # this would clear the pump's command buffer, but shouldn't be relied upon
             # self.serial.write(b"#")
             self.serial.reset_input_buffer()
             self.serial.reset_output_buffer()
-            sleep(delay)  # let the buffers clear (could defer here if async)
-
-            # it seems getting pre-encoded strings from a dict is only slightly faster,
-            # and only some of the time, when compared to just encoding args on the fly
-            self.serial.write(msg.encode() + b"\r")
-            self.logger.debug("Sent %s (attempt %s/3)", msg, tries)
+            sleep(delay)  # let the hardware buffers clear (could defer here if async)
+            self.serial.write(cmd)
             self.serial.flush()  # sleeps on a tight loop until everything is written
+            self.logger.debug("Sent %s (attempt %s/3)", msg, tries)
 
             if msg == "#":  # this won't give a response
                 break
             sleep(delay)  # let the pump respond
-            response = self.read()
+            response = self.read()  # returns an already-decoded string
             if "OK" in response:  # no need to retry
                 break
             tries += 1
@@ -187,14 +184,21 @@ class NextGenPumpBase:
         return response
 
     def read(self) -> str:
-        """Reads a single message from the pump."""
-        response = ""
+        """Reads a single message from the pump.
+
+        Returns:
+            str: The pump's response, or an empty string if no response is given.
+        """
+        response = b""
         tries = 1
-        while tries <= 3 and "/" not in response:
-            response = self.serial.read_until(b"/").decode()
+        while tries <= 3:
+            response = self.serial.read_until(b"/")  # we don't know the size a priori
             self.logger.debug("Got response: %s (attempt %s/3)", response, tries)
+            if b"/" in response:  # b"/" is the pump's EOL flag
+                break
             tries += 1
-        return response
+
+        return response.decode()
 
     def close(self) -> None:
         """Closes the serial port associated with the pump."""

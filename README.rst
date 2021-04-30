@@ -1,12 +1,12 @@
-========================================================================
-py-hplc |license| |python| |pypi| |build-status| |docs| |pylint| |style| 
-========================================================================
+========================================================================================
+py-hplc |license| |python| |pypi| |build-status| |docs| |style| |code quality|
+========================================================================================
 
 Overview
 ==========
 An unoffical Python wrapper for the SSI-Teledyne Next Generation class HPLC pumps.
 
-- `Download page`_ 
+- `Download page`_
 - `API Documentation`_
 - `Official pump documentation`_
 
@@ -16,8 +16,7 @@ Installation
 =============
 The package is available on PyPI.
 
-``pip install py-hplc``
-
+``python -m pip install --user py-hplc``
 
 
 Using the package
@@ -57,7 +56,7 @@ The interface behaves in a typical way. Pumps can be inspected or configured wit
     False
 
 | Some pump commands, such as "CC" (current conditions), return many pieces of data at once.
-| This package makes the data available in concise, descriptive, value-typed dictionaries. 
+| This package makes the data available in concise, descriptive, value-typed dictionaries.
 
 ::
 
@@ -74,14 +73,14 @@ See the `API Documentation`_ for more usage examples.
 
 .. _`Official pump documentation`: https://www.teledynessi.com/Manuals%20%20Guides/Product%20Guides%20and%20Resources/Serial%20Pump%20Control%20for%20Next%20Generation%20SSI%20Pumps.pdf
 
-.. |license| image:: https://img.shields.io/github/license/teauxfu/py-hplc 
+.. |license| image:: https://img.shields.io/github/license/teauxfu/py-hplc
   :target: https://github.com/teauxfu/py-hplc/blob/main/LICENSE.txt
   :alt: GitHub
 
-.. |python| image:: https://img.shields.io/pypi/pyversions/py-hplc   
+.. |python| image:: https://img.shields.io/pypi/pyversions/py-hplc
   :alt: PyPI - Python Version
-  
-.. |pypi| image:: https://img.shields.io/pypi/v/py-hplc   
+
+.. |pypi| image:: https://img.shields.io/pypi/v/py-hplc
   :target: https://pypi.org/project/py-hplc/
   :alt: PyPI
 
@@ -96,8 +95,7 @@ See the `API Documentation`_ for more usage examples.
 .. |style| image:: https://img.shields.io/badge/code%20style-black-000000.svg
   :target: https://github.com/psf/black
   :alt: Style
-  
-.. |pylint| image:: https://mperlet.github.io/pybadge/badges/9.87.svg
-  :target: https://github.com/mperlet/pybadge
-  :alt: Vanilla Pylint Score
-  
+
+.. |code quality| image:: https://img.shields.io/badge/code%20quality-flake8-black
+  :target: https://gitlab.com/pycqa/flake8
+  :alt: Code quality

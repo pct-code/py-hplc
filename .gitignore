@@ -7,7 +7,7 @@ __pycache__/
 *.so
 
 
-# user defined 
+# user defined
 **.vscode/
 poetry.toml
 

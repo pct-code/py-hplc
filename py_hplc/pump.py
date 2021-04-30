@@ -302,9 +302,9 @@ class NextGenPump(NextGenPumpBase):
         0 if disabled. 1 if detected leak will fault. 2 if it will not fault.
         """
         # there seems to not be a way to query the current value without setting it
-        if not mode in (0, 1, 2):
+        if mode not in (0, 1, 2):
             raise ValueError(
-                f"Invalid leak mode: {mode}. Choose from 0 (disabled), 1 (will fault),"
+                f"Invalid leak mode: {mode}. Choose from 0 (disabled), 1 (will fault), "
                 "or 2 (won't fault)."
             )
         self.command(f"lm{mode}")  # OK,LM:<mode>/
@@ -313,7 +313,7 @@ class NextGenPump(NextGenPumpBase):
     # todo solvent select commands need testing
     @property
     def solvent(self) -> int:
-        """Gets/sets the solvent compressibility value in 10 ** -6 per bar.
+        """Gets/sets the solvent compressibility value as an int in 10 ** -6 per bar.
 
         Alternatively, accepts the name of a solvent mapped in SOLVENT_COMPRESSIBILITY.
         See SOLVENT_COMPRESSIBILITY to get the solvent name.

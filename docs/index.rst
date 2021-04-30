@@ -3,7 +3,7 @@ Welcome to the documentation for py-hplc!
 
 This package wraps a serial connection with a thin Python interface to the commands available on SSI-Teledyne Next Generation HPLC pumps.
 
-This is an unofficial wrapper. 
+This is an unofficial wrapper.
 
 | View the `source`_.
 | View the pumps' official `user documentation`_.
@@ -15,7 +15,7 @@ This is an unofficial wrapper.
    :caption: Contents
    :maxdepth: -1
 
-   py_hplc   
+   py_hplc
    pump
    pump_base
    pump_error

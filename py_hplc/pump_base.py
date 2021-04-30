@@ -68,7 +68,7 @@ class NextGenPumpBase:
             self.logger.exception(err)
             raise
 
-    def identify(self):
+    def identify(self) -> None:
         """Gets persistent pump properties."""
         # general properties -----------------------------------------------------------
         # firmware

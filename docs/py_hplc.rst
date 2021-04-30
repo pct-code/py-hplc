@@ -10,7 +10,7 @@ This package wraps a serial connection with a thin Python interface to the comma
 Some data about the pumps, such as pressure and flowrate, are exposed as Python properties.
 This abstraction alleviates some of the inconsistencies involved in interfacing with various models of pump, and makes observing the pumps generally easier.
 
-This is an unofficial wrapper. 
+This is an unofficial wrapper.
 
 | View the `source`_.
 | View the pumps' official `user documentation`_.
@@ -63,7 +63,7 @@ The interface behaves in a typical way. Pumps can be inspected or configured wit
     False
 
 | Some pump commands, such as "CC" (current conditions), return many pieces of data at once.
-| This package makes the data available in concise, descriptive, value-typed dictionaries. 
+| This package makes the data available in concise, descriptive, value-typed dictionaries.
 
 ::
 
@@ -74,9 +74,9 @@ The interface behaves in a typical way. Pumps can be inspected or configured wit
 
 .. note::
 
-    | Some pump commands return values of 0 or 1 that have no meaning.  
-    | These are omitted from the dictionaries, but may be inspected using the "response" key. 
-    
+    | Some pump commands return values of 0 or 1 that have no meaning.
+    | These are omitted from the dictionaries, but may be inspected using the "response" key.
+
     ::
 
         >>> pump.pump_information()["response"]
@@ -113,8 +113,8 @@ You may pass in a reference to a :code:`logging.Logger` instance as a second, op
 Talking with the pumps directly
 --------------------------------
 
-A somewhat lower-level interface is provided on the pump object's :code:`command` and :code:`write` methods. 
-These methods are defined in :code:`NextGenPumpBase` and all pump methods rely on these internally. 
+A somewhat lower-level interface is provided on the pump object's :code:`command` and :code:`write` methods.
+These methods are defined in :code:`NextGenPumpBase` and all pump methods rely on these internally.
 :code:`command` will always return a response dictionary, or raise an exception if the pump responds with an error code.
 :code:`write` will only ever return the pump's decoded reponse as a string. ::
 
@@ -125,10 +125,10 @@ These methods are defined in :code:`NextGenPumpBase` and all pump methods rely o
 
 .. note::
 
-   | The :code:`write` command takes an optional :code:`delay` argument, which defaults to 0.015 s (15 ms). 
+   | The :code:`write` command takes an optional :code:`delay` argument, which defaults to 0.015 s (15 ms).
    | This delay is thread-blocking and occurs twice: once before the write operation and once before the read operation.
-   | 
-   | While these delays are not strictly necessary, they do make communication more robust. 
+   |
+   | While these delays are not strictly necessary, they do make communication more robust.
    | If you need to take lots of pressure measurements very quickly on a tight loop, consider using :code:`write` instead of the :code:`pressure` property.
 
 

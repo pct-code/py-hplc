@@ -2,6 +2,10 @@
 Changelog
 =========
 
+v0.1.7
+------
+ - minor code cleanup / improvement to packaging
+
 v0.1.6
 ------
 - Yet another minor performance improvement to write operations

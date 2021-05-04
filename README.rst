@@ -12,6 +12,9 @@ An unoffical Python wrapper for the SSI-Teledyne Next Generation class HPLC pump
 
 MIT license, (C) 2021 Alex Whittington <alex@southsun.tech>
 
+This project is stable and usable in a production environment, but listed as in beta due to the lack of a test suite (yet!).
+If you notice something weird, fragile, or otherwise encounter a bug, please open an `issue`_. 
+
 Installation
 =============
 The package is available on PyPI.
@@ -72,6 +75,8 @@ See the `API Documentation`_ for more usage examples.
 .. _`API Documentation`: https://py-hplc.readthedocs.io/en/latest/
 
 .. _`Official pump documentation`: https://www.teledynessi.com/Manuals%20%20Guides/Product%20Guides%20and%20Resources/Serial%20Pump%20Control%20for%20Next%20Generation%20SSI%20Pumps.pdf
+
+.. _`issue`: https://github.com/teauxfu/py-hplc/issues
 
 .. |license| image:: https://img.shields.io/github/license/teauxfu/py-hplc
   :target: https://github.com/teauxfu/py-hplc/blob/main/LICENSE.txt

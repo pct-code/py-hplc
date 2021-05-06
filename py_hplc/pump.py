@@ -89,44 +89,44 @@ class NextGenPump(NextGenPumpBase):
     """
 
     def __init__(self, device: str, logger: Logger = None) -> None:
-        """[summary]
+        """Inititalizes a NextGenPump instance.
 
         Args:
-            device (str): [description]
-            logger (Logger, optional): [description]. Defaults to None.
+            device (str): the port to open a serial connection at
+            logger (Logger, optional): Defaults to None.
         """
         super().__init__(device, logger)
 
     # general pump commands ------------------------------------------------------------
     # these don't return anything besides a string saying 'OK/' if they succeed
-    # if they didn't succeed, an exception would have been raised anyway -> return None
-    def run(self) -> None:
+    # if they didn't succeed, an exception would have been raised
+    def run(self) -> str:
         """Runs the pump."""
-        self.command("ru")
+        return self.command("ru")
 
-    def stop(self) -> None:
+    def stop(self) -> str:
         """Stops the pump."""
-        self.command("st")
+        return self.command("st")
 
-    def keypad_enable(self) -> None:
+    def keypad_enable(self) -> str:
         """Enables the pump's keypad."""
-        self.command("ke")
+        return self.command("ke")
 
-    def keypad_disable(self) -> None:
+    def keypad_disable(self) -> str:
         """Disables the pump's keypad."""
-        self.command("kd")
+        return self.command("kd")
 
-    def clear_faults(self) -> None:
+    def clear_faults(self) -> str:
         """Clears the pump's faults."""
-        self.command("cf")
+        return self.command("cf")
 
-    def reset(self) -> None:
+    def reset(self) -> str:
         """Resets the pump's user-adjustable values to factory defaults."""
-        self.command("re")
+        return self.command("re")
 
-    def zero_seal(self) -> None:
+    def zero_seal(self) -> str:
         """Zero the seal-life stroke counter."""
-        self.command("zs")
+        return self.command("zs")
 
     # bundled info retrieval -- these will return dataclasses --------------------------
     # all dicts have a "response" key whose value is the pump's decoded response string
@@ -182,6 +182,7 @@ class NextGenPump(NextGenPumpBase):
             flowrate=float(msg[1]),
             is_running=bool(int(msg[2])),
             pressure_compensation=float(msg[3]),
+            head=msg[4],
             upper_pressure_fault=bool(int(msg[9])),
             lower_pressure_fault=bool(int(msg[10])),
             in_prime=bool(int(msg[11])),
@@ -190,12 +191,12 @@ class NextGenPump(NextGenPumpBase):
             response=response,
         )
 
-    def read_faults(self) -> dict[str, bool]:
+    def read_faults(self) -> Faults:
         """Returns a dictionary representing the pump's fault status.
 
         Returns:
-            dict[str, bool]: "motor stall fault", "upper pressure fault",
-            "lower pressure fault", "reponse"
+            Faults: dataclass with .motor_stall_fault, .upper_pressure_fault,
+            .lower_pressure_fault, and .reponse attributes
         """
         response = self.command("rf")
         msg = response.split(",")
@@ -320,7 +321,7 @@ class NextGenPump(NextGenPumpBase):
         """
         response = self.command("lp")
         # OK,LP:<LPL>/
-        return float(response.split(",")[1][:-1])
+        return float(response.split(":")[1][:-1])
 
     @lower_pressure_limit.setter
     def lower_pressure_limit(self, limit: float) -> None:
@@ -352,7 +353,7 @@ class NextGenPump(NextGenPumpBase):
         0 if disabled. 1 if detected leak will fault. 2 if it will not fault.
         """
         # there seems to not be a way to query the current value without setting it
-        if mode not in (0, 1, 2):
+        if mode not in {mode.value for mode in LeakModes}:
             raise ValueError(
                 f"Invalid leak mode: {mode}. Choose from 0 (disabled), 1 (will fault), "
                 "or 2 (won't fault)."

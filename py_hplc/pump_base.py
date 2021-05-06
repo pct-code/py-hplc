@@ -71,18 +71,16 @@ class NextGenPumpBase:
     def identify(self) -> None:
         """Gets persistent pump properties."""
         # general properties -----------------------------------------------------------
-        # firmware
-        response = self.command("id")
-        if "OK," in response:  # expect OK,<ID> Version <ver>/
-            self.version = response.split(",")[1][:-1].strip()
         # pump head
         response = self.command("pi")
         if "OK," in response:
             self.head = response.split(",")[4]
+
         # max flowrate
         response = self.command("mf")
         if "OK,MF:" in response:  # expect OK,MF:<max_flow>/
             self.max_flowrate = float(response.split(":")[1][:-1])
+
         # volumetric resolution - used for setting flowrates later
         # expect OK,<flow>,<UPL>,<LPL>,<p_units>,0,<R/S>,0/
         response = self.command("cs")
@@ -91,11 +89,18 @@ class NextGenPumpBase:
             self.flowrate_factor = -5  # FI takes microliters/min * 10 as ints
         else:  # eg. "5.000"
             self.flowrate_factor = -6  # FI takes microliters/min as ints
+
+        # version
+        response = self.command("id")
+        if "OK," in response:  # expect OK,<ID> Version <ver>/
+            self.version = response.split(",")[1][:-1].strip()
+
         # for pumps that have a pressure sensor ----------------------------------------
         # pressure units
         response = self.command("pu")
         if "OK," in response:  # expect "OK,<p_units>/"
             self.pressure_units = response.split(",")[1][:-1]
+
         # max pressure
         response = self.command("mp")
         if "OK,MP:" in response:  # expect "OK,MP:<max_pressure>/"

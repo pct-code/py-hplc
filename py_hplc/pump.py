@@ -10,6 +10,8 @@ the second argument.
 
 from __future__ import annotations
 
+from dataclasses import dataclass
+from enum import Enum
 from logging import Logger
 from typing import TYPE_CHECKING
 
@@ -18,22 +20,63 @@ from py_hplc.pump_base import NextGenPumpBase
 if TYPE_CHECKING:
     from typing import Union
 
+
 # these are more or less useful than an int
-# currently unused
-LEAK_MODES = {
-    0: "leak sensor disabled",
-    1: "detected leak does not cause fault",
-    2: "detected leak does cause fault",
-}
+# LeakModes is currently unused
+class LeakModes(Enum):
+    LEAK_SENSOR_DISABLED = 0
+    LEAK_DOES_NOT_FAULT = 1
+    LEAK_DOES_FAULT = 2
+
+
 # units are 10 ** -6 per bar
-SOLVENT_COMPRESSIBILITY = {
-    "acetonitrile": 115,
-    "hexane": 167,
-    "isopropanol": 84,
-    "methanol": 121,
-    "tetrahydrofuran": 54,
-    "water": 46,
-}
+class Solvents(Enum):
+    ACETONITRILE = 115
+    HEXANE = 167
+    ISOPROPANOL = 84
+    METHANOL = 121
+    TETRAHYDROFURAN = 54
+    WATER = 46
+
+
+# we return bundled data with these
+@dataclass
+class CurrentConditions:
+    pressure: Union[float, int]
+    flowrate: float
+    response: str
+
+
+@dataclass
+class CurrentState:
+    flowrate: float
+    upper_pressure_limit: float
+    lower_pressure_limit: float
+    pressure_units: str
+    is_running: bool
+    response: str
+
+
+@dataclass
+class PumpInfo:
+    flowrate: float
+    is_running: bool
+    pressure_compensation: float
+    head: str
+    upper_pressure_fault: bool
+    lower_pressure_fault: bool
+    in_prime: bool
+    keypad_enabled: bool
+    motor_stall_fault: bool
+    response: str
+
+
+@dataclass
+class Faults:
+    motor_stall_fault: bool
+    upper_pressure_fault: bool
+    lower_pressure_fault: bool
+    response: str
 
 
 class NextGenPump(NextGenPumpBase):
@@ -52,10 +95,11 @@ class NextGenPump(NextGenPumpBase):
             device (str): [description]
             logger (Logger, optional): [description]. Defaults to None.
         """
-        NextGenPumpBase.__init__(self, device, logger)
+        super().__init__(device, logger)
 
     # general pump commands ------------------------------------------------------------
-
+    # these don't return anything besides a string saying 'OK/' if they succeed
+    # if they didn't succeed, an exception would have been raised anyway -> return None
     def run(self) -> None:
         """Runs the pump."""
         self.command("ru")
@@ -81,66 +125,70 @@ class NextGenPump(NextGenPumpBase):
         self.command("re")
 
     def zero_seal(self) -> None:
-        """Zero the seal-life stroke counter. 0"""
+        """Zero the seal-life stroke counter."""
         self.command("zs")
 
-    # bundled info retrieval -- these will return dicts -------------------------------
+    # bundled info retrieval -- these will return dataclasses --------------------------
     # all dicts have a "response" key whose value is the pump's decoded response string
-    def current_conditions(self) -> dict[str, Union[float, str]]:
-        """Returns a dictionary describing the current conditions of the pump.
+    def current_conditions(self) -> CurrentConditions:
+        """Returns a dataclass describing the current conditions of the pump.
 
         Returns:
-            dict[str, Union[float, int, str]]: keys "pressure", "flowrate", "response"
+            CurrentConditions: a dataclass with .pressure and .flowrate attributes
         """
-        result = self.command("cc")
-        msg = result["response"].split(",")
+        response = self.command("cc")
+        msg = response.split(",")
         # OK,<pressure>,<flow>/
         if self.pressure_units == "psi":
-            result["pressure"] = int(msg[1])
+            pressure = int(msg[1])
         else:
-            result["pressure"] = float(msg[1])
-        result["flowrate"] = float(msg[2][:-1])
-        return result
+            pressure = float(msg[1])
+        return CurrentConditions(
+            pressure=pressure, flowrate=float(msg[2][:-1]), response=response
+        )
 
-    def current_state(self) -> dict[str, Union[bool, float, int, str]]:
-        """Returns a dictionary describing the current state of the pump.
+    def current_state(self) -> CurrentState:
+        """Returns a dataclass describing the current state of the pump.
 
         Returns:
-            dict[str, Union[bool, float, str]]: keys "flowrate", "upper limit",
-            "lower limit", "pressure units", "is running", "response"
+            CurrentState: dataclass with .flowrate, .upper limit,
+            .lower limit, .pressure units, .is running, and .response attributes
         """
-        result = self.command("cs")
+        response = self.command("cs")
         # OK,<flow>,<UPL>,<LPL>,<p_units>,0,<R/S>,0/
-        msg = result["response"].split(",")
-        result["flowrate"] = float(msg[1])
-        result["upper limit"] = float(msg[2])
-        result["lower limit"] = float(msg[3])
-        result["pressure units"] = msg[4]
-        result["is running"] = bool(int(msg[6]))
-        return result
+        msg = response.split(",")
+        return CurrentState(
+            flowrate=float(msg[1]),
+            upper_pressure_limit=float(msg[2]),
+            lower_pressure_limit=float(msg[3]),
+            pressure_units=msg[4],
+            is_running=bool(int(msg[6])),
+            response=response,
+        )
 
-    def pump_information(self) -> dict[str, Union[float, int, str]]:
+    def pump_information(self) -> PumpInfo:
         """Gets a dictionary of information about the pump.
 
         Returns:
-            dict[str, Union[bool, float, str]]: "flowrate", "is running",
-            "pressure compensation", "head", "upper limit", "lower limit", "in prime",
-            "keypad enabled", "motor stall fault", "response"
+            PumpInfo: dataclass with .flowrate, .is_running,
+            .pressure_compensation, .head, .upper_limit, .lower_limit, .in_prime,
+            .keypad_enabled, .motor_stall_fault, and .response attributes
         """
-        result = self.command("pi")
+        response = self.command("pi")
         # OK,<flow>,<R/S>,<p_comp>,<head>,0,1,0,0,<UPF>,<LPF>,<prime>,<keypad>,
         # 0,0,0,0,<stall>/
-        msg = result["response"].split(",")
-        result["flowrate"] = float(msg[1])
-        result["is running"] = bool(int(msg[2]))
-        result["pressure compensation"] = float(msg[3])
-        result["head"] = msg[4]
-        result["upper limit fault"] = bool(int(msg[9]))
-        result["lower limit fault"] = bool(int(msg[10]))
-        result["in prime"] = bool(int(msg[11]))
-        result["keypad enabled"] = bool(int(msg[12]))
-        result["motor stall fault"] = bool(int(msg[17][:-1]))
-        return result
+        msg = response.split(",")
+        return PumpInfo(
+            flowrate=float(msg[1]),
+            is_running=bool(int(msg[2])),
+            pressure_compensation=float(msg[3]),
+            upper_pressure_fault=bool(int(msg[9])),
+            lower_pressure_fault=bool(int(msg[10])),
+            in_prime=bool(int(msg[11])),
+            keypad_enabled=bool(int(msg[12])),
+            motor_stall_fault=bool(int(msg[17][:-1])),
+            response=response,
+        )
 
     def read_faults(self) -> dict[str, bool]:
         """Returns a dictionary representing the pump's fault status.
@@ -149,35 +197,37 @@ class NextGenPump(NextGenPumpBase):
             dict[str, bool]: "motor stall fault", "upper pressure fault",
             "lower pressure fault", "reponse"
         """
-        result = self.command("rf")
-        msg = result["response"].split(",")
+        response = self.command("rf")
+        msg = response.split(",")
         # OK,<stall>,<UPF>,<LPF>/
-        result["motor stall fault"] = bool(int(msg[1]))
-        result["upper pressure fault"] = bool(int(msg[2]))
-        result["lower pressure fault"] = bool(int(msg[3][:-1]))
-        return result
+        return Faults(
+            motor_stall_fault=bool(int(msg[1])),
+            upper_pressure_fault=bool(int(msg[2])),
+            lower_pressure_fault=bool(int(msg[3][:-1])),
+            response=response,
+        )
 
     # general properties ---------------------------------------------------------------
     @property
     def is_running(self) -> None:
         """Returns a bool representing if the pump is running or not."""
-        return self.current_state()["is running"]
+        return self.current_state().is_running
 
     @property
     def stroke_counter(self) -> int:
         """Gets the seal-life stroke counter as an int."""
-        result = self.command("gs")
+        response = self.command("gs")
         # OK,GS:<seal>/
-        return int(result["response"].split(":")[1][:-1])
+        return int(response.split(":")[1][:-1])
 
     # flowrate compensation
     @property
     def flowrate_compensation(self) -> float:
         """Returns the flowrate compensation value as a float representing
         a percentage."""
-        result = self.command("uc")
+        response = self.command("uc")
         # OK,UC:<user_comp>/
-        return float(result["response"].split(":")[1][:-1]) / 100
+        return float(response.split(":")[1][:-1]) / 100
 
     @flowrate_compensation.setter
     def flowrate_compensation(self, value: float) -> None:
@@ -207,7 +257,7 @@ class NextGenPump(NextGenPumpBase):
         Returns:
             float: the pump's flowrate in mililiters per minute
         """
-        return self.current_conditions()["flowrate"]
+        return self.current_conditions().flowrate
 
     @flowrate.setter
     def flowrate(self, flowrate: float) -> None:
@@ -232,9 +282,9 @@ class NextGenPump(NextGenPumpBase):
         # beware using this on a tight loop https://stackoverflow.com/questions/6618002
         # OK,<pressure>/
         if self.pressure_units == "psi":
-            return int(self.command("pr")["response"].split(",")[1][:-1])
+            return int(self.command("pr").split(",")[1][:-1])
         else:
-            return float(self.command("pr")["response"].split(",")[1][:-1])
+            return float(self.command("pr").split(",")[1][:-1])
 
     # upper and lower pressure limits
     @property
@@ -245,9 +295,9 @@ class NextGenPump(NextGenPumpBase):
         Values in bars can be precise to one digit after the decimal point.
         Values in MPa can be precise to two digits after the decimal point.
         """
-        result = self.command("up")
+        response = self.command("up")
         # OK,UP:<UPL>/
-        return float(result["response"].split(":")[1][:-1])
+        return float(response.split(":")[1][:-1])
 
     @upper_pressure_limit.setter
     def upper_pressure_limit(self, limit: float) -> None:
@@ -268,9 +318,9 @@ class NextGenPump(NextGenPumpBase):
         Values in bars can be precise to one digit after the decimal point.
         Values in MPa can be precise to two digits after the decimal point.
         """
-        result = self.command("lp")
+        response = self.command("lp")
         # OK,LP:<LPL>/
-        return float(result["response"].split(",")[1][:-1])
+        return float(response.split(",")[1][:-1])
 
     @lower_pressure_limit.setter
     def lower_pressure_limit(self, limit: float) -> None:
@@ -292,9 +342,9 @@ class NextGenPump(NextGenPumpBase):
         Returns:
             bool: [description]
         """
-        result = self.command("ls")
+        response = self.command("ls")
         # OK,LS:<leak>/
-        return bool(int(result["response"].split(":")[1][:-1]))
+        return bool(int(response.split(":")[1][:-1]))
 
     def set_leak_mode(self, mode: int) -> int:
         """Sets the pump's current leak mode as an int.
@@ -319,12 +369,12 @@ class NextGenPump(NextGenPumpBase):
         See SOLVENT_COMPRESSIBILITY to get the solvent name.
         """
         # OK,<solvent>/
-        return int(self.command("rs")["response"].split(",")[1][:-1])
+        return int(self.command("rs").split(",")[1][:-1])
 
     @solvent.setter
     def solvent(self, value: Union[str, int]) -> None:
         """Gets/sets the solvent compressibility value as an int in 10 ** -6 per bar."""
         # if we got a solvent name string, convert it to an int
-        if value in SOLVENT_COMPRESSIBILITY.keys():
-            value = SOLVENT_COMPRESSIBILITY.get(value)
+        if value in Solvents.__members__:
+            value = Solvents[value.upper()].value
         self.command(f"ss{value}")  # OK/

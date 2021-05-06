@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import logging
 from time import sleep
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from serial import SerialException, serial_for_url
 from serial.serialutil import EIGHTBITS, PARITY_NONE, STOPBITS_ONE
@@ -72,20 +72,20 @@ class NextGenPumpBase:
         """Gets persistent pump properties."""
         # general properties -----------------------------------------------------------
         # firmware
-        response = self.write("id")
+        response = self.command("id")
         if "OK," in response:  # expect OK,<ID> Version <ver>/
             self.version = response.split(",")[1][:-1].strip()
         # pump head
-        response = self.write("pi")
+        response = self.command("pi")
         if "OK," in response:
             self.head = response.split(",")[4]
         # max flowrate
-        response = self.write("mf")
+        response = self.command("mf")
         if "OK,MF:" in response:  # expect OK,MF:<max_flow>/
             self.max_flowrate = float(response.split(":")[1][:-1])
         # volumetric resolution - used for setting flowrates later
         # expect OK,<flow>,<UPL>,<LPL>,<p_units>,0,<R/S>,0/
-        response = self.write("cs")
+        response = self.command("cs")
         precision = len(response.split(",")[1].split(".")[1])
         if precision == 2:  # eg. "5.00"
             self.flowrate_factor = -5  # FI takes microliters/min * 10 as ints
@@ -93,15 +93,15 @@ class NextGenPumpBase:
             self.flowrate_factor = -6  # FI takes microliters/min as ints
         # for pumps that have a pressure sensor ----------------------------------------
         # pressure units
-        response = self.write("pu")
+        response = self.command("pu")
         if "OK," in response:  # expect "OK,<p_units>/"
             self.pressure_units = response.split(",")[1][:-1]
         # max pressure
-        response = self.write("mp")
+        response = self.command("mp")
         if "OK,MP:" in response:  # expect "OK,MP:<max_pressure>/"
             self.max_pressure = float(response.split(":")[1][:-1])
 
-    def command(self, command: str) -> dict[str, Any]:
+    def command(self, command: str) -> str:
         """Sends the passed string to the pump as bytes.
 
         Args:
@@ -127,7 +127,7 @@ class NextGenPumpBase:
                 port=self.serial.name,
             )
 
-        return {"response": response}  # we parse this later and add entries
+        return response  # we parse this later
 
     def write(self, msg: str, delay: float = 0.015) -> str:
         """Write a command to the pump.

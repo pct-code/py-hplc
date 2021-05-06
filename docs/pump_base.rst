@@ -1,5 +1,5 @@
 NextGenPumpBase
 ================
 
-.. autoclass:: py_hplc.next_gen_pump_base.NextGenPumpBase
+.. autoclass:: py_hplc.pump_base.NextGenPumpBase
     :members:

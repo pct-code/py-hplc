@@ -8,9 +8,9 @@ from __future__ import annotations
 
 import logging
 from time import sleep
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Union
 
-from serial import SerialException, serial_for_url
+from serial import Serial, SerialException, serial_for_url
 from serial.serialutil import EIGHTBITS, PARITY_NONE, STOPBITS_ONE
 
 from py_hplc.pump_error import PumpError
@@ -22,23 +22,26 @@ if TYPE_CHECKING:
 class NextGenPumpBase:
     """Serial port wrapper for MX-class Teledyne pumps."""
 
-    def __init__(self, device: str, logger: Logger = None) -> None:
+    def __init__(self, device: Union[str, Serial], logger: Logger = None) -> None:
         # you'll have to reach in and add handlers yourself from the calling code
         if logger is None:  # append to the root logger
             self.logger = logging.getLogger(f"{logging.getLogger().name}.{device}")
         else:  # append to the passed logger
             self.logger = logging.getLogger(f"{logger.name}.{device}")
 
-        # fetch a platform-appropriate serial interface
-        self.serial = serial_for_url(
-            device,
-            baudrate=9600,
-            bytesize=EIGHTBITS,
-            do_not_open=True,
-            parity=PARITY_NONE,
-            stopbits=STOPBITS_ONE,
-            timeout=0.1,  # 100 ms
-        )
+        if isinstance(device, str):
+            # fetch a platform-appropriate serial interface
+            self.serial = serial_for_url(
+                device,
+                baudrate=9600,
+                bytesize=EIGHTBITS,
+                do_not_open=True,
+                parity=PARITY_NONE,
+                stopbits=STOPBITS_ONE,
+                timeout=0.1,  # 100 ms
+            )
+        elif isinstance(device, Serial):
+            self.serial = device
 
         # persistent identifying attributes
         self.max_flowrate: float = None

@@ -13,7 +13,7 @@ An unoffical Python wrapper for the SSI-Teledyne Next Generation class HPLC pump
 MIT license, (C) 2021 Alex Whittington <alex@southsun.tech>
 
 This project is stable and usable in a production environment, but listed as in beta due to the lack of a test suite (yet!).
-If you notice something weird, fragile, or otherwise encounter a bug, please open an `issue`_. 
+If you notice something weird, fragile, or otherwise encounter a bug, please open an `issue`_.
 
 Installation
 =============
@@ -30,43 +30,50 @@ Using the package
 
 You can open a pump instance like this ::
 
-   >>> from py_hplc import NextGenPump
-   >>> pump = NextGenPump("COM3")  # or "/dev/ttyUSB0", etc.
+  >>> from py_hplc import NextGenPump
+  >>> pump = NextGenPump("COM3")  # or "/dev/ttyUSB0", etc.
+
+Or like this ::
+
+  >>> from py_hplc import NextGenPump
+  >>> from serial import Serial
+  >>> device = Serial("COM3")  # or "/dev/ttyUSB0", etc.
+  >>> pump = NextGenPump(device)
 
 You can inspect the pump for useful information such as its pressure units, firmware version, max flowrate, etc. ::
 
-   >>> pump.version
-   '191017 Version 2.0.8'
-   >>> pump.pressure_units
-   'psi'
-   >>> pump.pressure
-   100
+  >>> pump.version
+  '191017 Version 2.0.8'
+  >>> pump.pressure_units
+  'psi'
+  >>> pump.pressure
+  100
 
 The interface behaves in a typical way. Pumps can be inspected or configured without the use of getters and setters. ::
 
-    >>> pump.flowrate
-    10.0
-    >>> pump.flowrate = 5.5  # mL / min
-    >>> pump.flowrate
-    5.5
-    >>> pump.run()
-    >>> pump.is_running
-    True
-    >>> pump.stop()
-    >>> pump.is_running
-    False
-    >>> pump.leak_detected
-    False
+  >>> pump.flowrate
+  10.0
+  >>> pump.flowrate = 5.5  # mL / min
+  >>> pump.flowrate
+  5.5
+  >>> pump.run()
+  >>> pump.is_running
+  True
+  >>> pump.stop()
+  >>> pump.is_running
+  False
+  >>> pump.leak_detected
+  False
 
 | Some pump commands, such as "CC" (current conditions), return many pieces of data at once.
-| This package makes the data available in concise, descriptive, value-typed dictionaries.
+| This package makes the data available in concise, descriptive, value-typed dataclasses.
 
 ::
 
-   >>> pump.current_conditions()
-   {'response': 'OK,0000,10.00/', 'pressure': 0, 'flowrate': 10.0}
-   >>> pump.read_faults()
-   {'response': 'OK,0,0,0/', 'motor stall fault': False, 'upper pressure fault': False, 'lower pressure fault': False}
+  >>> pump.current_conditions()
+  CurrentConditions(pressure=0, flowrate=10.0, response='OK,0000,10.00/')
+  >>> pump.read_faults()
+  Faults(motor_stall_fault=False, upper_pressure_fault=False, lower_pressure_fault=False, response='OK,0,0,0/')
 
 See the `API Documentation`_ for more usage examples.
 

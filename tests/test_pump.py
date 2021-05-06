@@ -72,8 +72,8 @@ class TestPump(unittest.TestCase):
         self.assertIsInstance(state.pressure_units, str)
         self.assertIsInstance(state.response, str)
 
-    def test_pump_information(self) -> None:
-        info = self.PUMP.pump_information()
+    def test_pump_info(self) -> None:
+        info = self.PUMP.pump_info()
         self.assertIsInstance(info, PumpInfo)
         self.assertIsInstance(info.flowrate, float)
         self.assertIsInstance(info.is_running, bool)

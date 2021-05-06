@@ -15,6 +15,8 @@ from enum import Enum
 from logging import Logger
 from typing import TYPE_CHECKING
 
+from serial import Serial
+
 from py_hplc.pump_base import NextGenPumpBase
 
 if TYPE_CHECKING:
@@ -24,6 +26,17 @@ if TYPE_CHECKING:
 # these are more or less useful than an int
 # LeakModes is currently unused
 class LeakModes(Enum):
+    """An enum containing the possible leak modes.
+
+    Members are documented here as attributes.
+    This is currently unused.
+
+    Attributes:
+        LEAK_SENSOR_DISABLED: 0
+        LEAK_DOES_NOT_FAULT: 1
+        LEAK_DOES_FAULT: 2
+    """
+
     LEAK_SENSOR_DISABLED = 0
     LEAK_DOES_NOT_FAULT = 1
     LEAK_DOES_FAULT = 2
@@ -31,6 +44,22 @@ class LeakModes(Enum):
 
 # units are 10 ** -6 per bar
 class Solvents(Enum):
+    """An enum containing some common solvents and their compressibility values.
+
+    Value units are 10 ** -6 per bar.
+    Members are documented here as attributes.
+    Used when setting the solvent for pumps with a solvent select feature.
+    When setting the solvent, you can pass in an int or one of these names as a string.
+
+    Attributes:
+        ACETONITRILE: 115
+        HEXANE: 167
+        ISOPROPANOL: 84
+        METHANOL: 121
+        TETRAHYDROFURAN: 54
+        WATER: 46
+    """
+
     ACETONITRILE = 115
     HEXANE = 167
     ISOPROPANOL = 84
@@ -42,6 +71,16 @@ class Solvents(Enum):
 # we return bundled data with these
 @dataclass
 class CurrentConditions:
+    """A dataclass representing the current conditions of the pump.
+
+    Describes the pump's pressure and flowrate.
+
+    Attributes:
+        pressure (Union[float, int]): current pressure as a float (bar/MPa) or int (psi)
+        flowrate (float): current flowrate as a float
+        response (str): the pump's response as a string
+    """
+
     pressure: Union[float, int]
     flowrate: float
     response: str
@@ -49,6 +88,19 @@ class CurrentConditions:
 
 @dataclass
 class CurrentState:
+    """A dataclass representing the current state of the pump.
+
+    Describes the pump's flowrate, pressure limits, pressure units, and running state.
+
+    Attributes:
+        flowrate (float): current flowrate as a float
+        upper_pressure_limit (float): upper pressure at which the pump will fault
+        lower_pressure_limit (float): lower pressure at which the pump will fault
+        pressure_units (str): the pump's pressure units
+        is_running (bool): whether or not the pump is currently running
+        response (str): the pump's response as a string
+    """
+
     flowrate: float
     upper_pressure_limit: float
     lower_pressure_limit: float
@@ -59,6 +111,25 @@ class CurrentState:
 
 @dataclass
 class PumpInfo:
+    """A dataclass representing information about the pump.
+
+    Describes the pump's flowrate, running state, pressure compensation value, head,
+    pressure fault states, priming state, keypad enabled state, and
+    motor stall fault state.
+
+    Attributes:
+        flowrate (float): current flowrate as a float
+        is_running (bool): whether or not the pump is currently running
+        pressure_compensation (float): pressure compensation value. set via calibration
+        head (str): the pump's head type
+        upper_pressure_fault (bool): whether the upper pressure limit has been reached
+        lower_pressure_fault (bool): whether the lower pressure limit has been reached
+        in_prime (bool): whether the pump is in priming mode
+        keypad_enabled (bool): whether the pump's keypad is enabled
+        motor_stall_fault (bool): whether the pump's motor has faulted
+        response (str): the pump's response as a string
+    """
+
     flowrate: float
     is_running: bool
     pressure_compensation: float
@@ -73,6 +144,16 @@ class PumpInfo:
 
 @dataclass
 class Faults:
+    """A dataclass representing the pump's current fault state.
+
+    Describes the state of the motor stall fault and pressure limit faults.
+
+    Attributes:
+        motor_stall_fault (bool): whether the pump's motor has faulted
+        upper_pressure_fault (bool): whether the upper pressure limit has been reached
+        lower_pressure_fault (bool): whether the lower pressure limit has been reached
+    """
+
     motor_stall_fault: bool
     upper_pressure_fault: bool
     lower_pressure_fault: bool
@@ -83,17 +164,17 @@ class NextGenPump(NextGenPumpBase):
     """Serial port wrapper for Next Generation pumps.
     Commands to the pumps are available as methods on this object.
 
-    Every command will return a dict representing the result of the command.
-    This dict will contain at least a "response" key whose value is a string
-    represtation of the pump's response.
+    Every command will return either the string 'OK/' or a dataclass instance.
+    These dataclasses will contain at least a `response` attribute whose value is
+    a string represtation of the pump's response.
     """
 
-    def __init__(self, device: str, logger: Logger = None) -> None:
-        """Inititalizes a NextGenPump instance.
+    def __init__(self, device: Union[str, Serial], logger: Logger = None) -> None:
+        """Inititalizes a `NextGenPump` instance.
 
         Args:
-            device (str): the port to open a serial connection at
-            logger (Logger, optional): Defaults to None.
+            device (Union[str, Serial]): a `Serial` instance, or the port to open one at
+            logger (Logger, optional): a `logging.Logger` isntance. Defaults to None
         """
         super().__init__(device, logger)
 
@@ -134,7 +215,7 @@ class NextGenPump(NextGenPumpBase):
         """Returns a dataclass describing the current conditions of the pump.
 
         Returns:
-            CurrentConditions: a dataclass with .pressure and .flowrate attributes
+            `CurrentConditions`: a `dataclass` with `pressure` and `flowrate` attributes
         """
         response = self.command("cc")
         msg = response.split(",")
@@ -151,8 +232,9 @@ class NextGenPump(NextGenPumpBase):
         """Returns a dataclass describing the current state of the pump.
 
         Returns:
-            CurrentState: dataclass with .flowrate, .upper limit,
-            .lower limit, .pressure units, .is running, and .response attributes
+            `CurrentState`: dataclass with `flowrate`, `upper_pressure_limit`,
+            `lower_pressure_limit`, `pressure units`, `is_running`, and `response`
+            attributes
         """
         response = self.command("cs")
         # OK,<flow>,<UPL>,<LPL>,<p_units>,0,<R/S>,0/
@@ -166,13 +248,13 @@ class NextGenPump(NextGenPumpBase):
             response=response,
         )
 
-    def pump_information(self) -> PumpInfo:
+    def pump_info(self) -> PumpInfo:
         """Gets a dictionary of information about the pump.
 
         Returns:
-            PumpInfo: dataclass with .flowrate, .is_running,
-            .pressure_compensation, .head, .upper_limit, .lower_limit, .in_prime,
-            .keypad_enabled, .motor_stall_fault, and .response attributes
+            `PumpInfo`: dataclass with `flowrate`, `is_running`,
+            `pressure_compensation`, `head`, `upper_limit`, `lower_limit`, `in_prime`,
+            `keypad_enabled`, `motor_stall_fault`, and `response` attributes
         """
         response = self.command("pi")
         # OK,<flow>,<R/S>,<p_comp>,<head>,0,1,0,0,<UPF>,<LPF>,<prime>,<keypad>,
@@ -192,11 +274,11 @@ class NextGenPump(NextGenPumpBase):
         )
 
     def read_faults(self) -> Faults:
-        """Returns a dictionary representing the pump's fault status.
+        """Returns a dataclass representing the pump's fault status.
 
         Returns:
-            Faults: dataclass with .motor_stall_fault, .upper_pressure_fault,
-            .lower_pressure_fault, and .reponse attributes
+            `Faults`: dataclass with `motor_stall_fault`, `upper_pressure_fault`,
+            `lower_pressure_fault`, and `reponse` attributes
         """
         response = self.command("rf")
         msg = response.split(",")
@@ -224,8 +306,7 @@ class NextGenPump(NextGenPumpBase):
     # flowrate compensation
     @property
     def flowrate_compensation(self) -> float:
-        """Returns the flowrate compensation value as a float representing
-        a percentage."""
+        """Returns the flowrate compensation as a float representing a percentage."""
         response = self.command("uc")
         # OK,UC:<user_comp>/
         return float(response.split(":")[1][:-1]) / 100
@@ -256,7 +337,7 @@ class NextGenPump(NextGenPumpBase):
         Set values are bounded to the pump's max flowrate.
 
         Returns:
-            float: the pump's flowrate in mililiters per minute
+            float : the pump's flowrate in mililiters per minute
         """
         return self.current_conditions().flowrate
 
@@ -278,7 +359,7 @@ class NextGenPump(NextGenPumpBase):
     def pressure(self) -> Union[float, int]:
         """Gets the pump's current pressure as a float using the pump's pressure units.
 
-        Pressure units are most easily found on a pump instance at .pressure_units
+        Pressure units are most easily found on a pump instance at `pressure_units`
         """
         # beware using this on a tight loop https://stackoverflow.com/questions/6618002
         # OK,<pressure>/
@@ -292,7 +373,7 @@ class NextGenPump(NextGenPumpBase):
     def upper_pressure_limit(self) -> float:
         """Gets/sets the pump's current upper pressure limit as a float.
 
-        The units used can be inspected on the instance's pressure_units attribute.
+        The units used can be inspected on the instance's `pressure_units` attribute.
         Values in bars can be precise to one digit after the decimal point.
         Values in MPa can be precise to two digits after the decimal point.
         """
@@ -315,7 +396,7 @@ class NextGenPump(NextGenPumpBase):
     def lower_pressure_limit(self) -> float:
         """Gets/sets the lower pressurepump limit as a float.
 
-        Units can be inspected on the instance's pressure_units attribute.
+        Units can be inspected on the instance's `pressure_units` attribute.
         Values in bars can be precise to one digit after the decimal point.
         Values in MPa can be precise to two digits after the decimal point.
         """
@@ -341,7 +422,7 @@ class NextGenPump(NextGenPumpBase):
         Pumps without a leak sensor always return False.
 
         Returns:
-            bool: [description]
+            bool: whether or not a leak is detected
         """
         response = self.command("ls")
         # OK,LS:<leak>/

@@ -12,7 +12,6 @@ An unoffical Python wrapper for the SSI-Teledyne Next Generation class HPLC pump
 
 MIT license, (C) 2021 Alex Whittington <alex@southsun.tech>
 
-This project is stable and usable in a production environment, but listed as in beta due to the lack of a test suite (yet!).
 If you notice something weird, fragile, or otherwise encounter a bug, please open an `issue`_.
 
 Installation

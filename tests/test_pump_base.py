@@ -10,15 +10,15 @@ from py_hplc.pump_error import PumpError
 
 
 class TestPumpBase(unittest.TestCase):
-    SERIAL_PORT = "COM3"  # this is machine-specific
+    SERIAL_PORT = "COM4"  # this is machine-specific
     PUMP = None
 
     # setUp and tearDown will get run between each test method
     def setUp(self) -> None:
         try:
             self.PUMP = NextGenPumpBase(self.SERIAL_PORT)
-        except SerialException:
-            self.fail(f"No such port {self.SERIAL_PORT}")
+        except SerialException as err:
+            self.fail(f"No such port {self.SERIAL_PORT} \n {err}")
 
     def tearDown(self) -> None:
         self.PUMP.close()

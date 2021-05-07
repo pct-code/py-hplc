@@ -18,7 +18,7 @@ from py_hplc.pump_error import PumpError
 
 
 class TestPump(unittest.TestCase):
-    SERIAL_PORT = "COM3"
+    SERIAL_PORT = "COM4"  # this is machine-specific
     PUMP = None
 
     # setUp and tearDown will get run between each test method
@@ -108,6 +108,8 @@ class TestPump(unittest.TestCase):
     def test_flowrate(self) -> None:
         current = self.PUMP.flowrate
         self.assertIsInstance(current, float)
+        self.PUMP.flowrate = 9999
+        self.assertEqual(self.PUMP.flowrate, self.PUMP.max_flowrate)
         self.PUMP.flowrate = current
         self.assertEqual(current, self.PUMP.flowrate)
 
@@ -117,6 +119,8 @@ class TestPump(unittest.TestCase):
     def test_upper_pressure_limit(self) -> None:
         current = self.PUMP.upper_pressure_limit
         self.assertIsInstance(current, (float, int))
+        self.PUMP.upper_pressure_limit = 9999
+        self.assertEqual(self.PUMP.upper_pressure_limit, self.PUMP.max_pressure)
         self.PUMP.upper_pressure_limit = current
         self.assertEqual(current, self.PUMP.upper_pressure_limit)
 

@@ -54,7 +54,8 @@ class NextGenPumpBase:
         self.flowrate_factor: int = None  # used as 10 ** flowrate_factor
 
         # other configuration logic here
-        self.open()  # open the serial connection
+        if not self.is_open:
+            self.open()  # open the serial connection
         self.identify()  # populate attributes, takes about 0.16 s on avg
 
     def open(self) -> None:

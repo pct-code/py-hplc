@@ -8,10 +8,10 @@ from __future__ import annotations
 
 import logging
 from time import sleep
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Union
 
 from serial import SerialException, serial_for_url
-from serial.serialutil import EIGHTBITS, PARITY_NONE, STOPBITS_ONE
+from serial.serialutil import EIGHTBITS, PARITY_NONE, STOPBITS_ONE, SerialBase
 
 from py_hplc.pump_error import PumpError
 
@@ -22,23 +22,26 @@ if TYPE_CHECKING:
 class NextGenPumpBase:
     """Serial port wrapper for MX-class Teledyne pumps."""
 
-    def __init__(self, device: str, logger: Logger = None) -> None:
+    def __init__(self, device: Union[SerialBase, str], logger: Logger = None) -> None:
         # you'll have to reach in and add handlers yourself from the calling code
         if logger is None:  # append to the root logger
             self.logger = logging.getLogger(f"{logging.getLogger().name}.{device}")
         else:  # append to the passed logger
             self.logger = logging.getLogger(f"{logger.name}.{device}")
 
-        # fetch a platform-appropriate serial interface
-        self.serial = serial_for_url(
-            device,
-            baudrate=9600,
-            bytesize=EIGHTBITS,
-            do_not_open=True,
-            parity=PARITY_NONE,
-            stopbits=STOPBITS_ONE,
-            timeout=0.1,  # 100 ms
-        )
+        if isinstance(device, str):
+            # fetch a platform-appropriate serial interface
+            self.serial = serial_for_url(
+                device,
+                baudrate=9600,
+                bytesize=EIGHTBITS,
+                do_not_open=True,
+                parity=PARITY_NONE,
+                stopbits=STOPBITS_ONE,
+                timeout=0.1,  # 100 ms
+            )
+        elif isinstance(device, SerialBase):
+            self.serial = device
 
         # persistent identifying attributes
         self.max_flowrate: float = None
@@ -51,7 +54,8 @@ class NextGenPumpBase:
         self.flowrate_factor: int = None  # used as 10 ** flowrate_factor
 
         # other configuration logic here
-        self.open()  # open the serial connection
+        if not self.is_open:
+            self.open()  # open the serial connection
         self.identify()  # populate attributes, takes about 0.16 s on avg
 
     def open(self) -> None:
@@ -71,37 +75,42 @@ class NextGenPumpBase:
     def identify(self) -> None:
         """Gets persistent pump properties."""
         # general properties -----------------------------------------------------------
-        # firmware
-        response = self.write("id")
-        if "OK," in response:  # expect OK,<ID> Version <ver>/
-            self.version = response.split(",")[1][:-1].strip()
         # pump head
-        response = self.write("pi")
+        response = self.command("pi")
         if "OK," in response:
             self.head = response.split(",")[4]
+
         # max flowrate
-        response = self.write("mf")
+        response = self.command("mf")
         if "OK,MF:" in response:  # expect OK,MF:<max_flow>/
             self.max_flowrate = float(response.split(":")[1][:-1])
+
         # volumetric resolution - used for setting flowrates later
         # expect OK,<flow>,<UPL>,<LPL>,<p_units>,0,<R/S>,0/
-        response = self.write("cs")
+        response = self.command("cs")
         precision = len(response.split(",")[1].split(".")[1])
         if precision == 2:  # eg. "5.00"
             self.flowrate_factor = -5  # FI takes microliters/min * 10 as ints
         else:  # eg. "5.000"
             self.flowrate_factor = -6  # FI takes microliters/min as ints
+
+        # version
+        response = self.command("id")
+        if "OK," in response:  # expect OK,<ID> Version <ver>/
+            self.version = response.split(",")[1][:-1].strip()
+
         # for pumps that have a pressure sensor ----------------------------------------
         # pressure units
-        response = self.write("pu")
+        response = self.command("pu")
         if "OK," in response:  # expect "OK,<p_units>/"
             self.pressure_units = response.split(",")[1][:-1]
+
         # max pressure
-        response = self.write("mp")
+        response = self.command("mp")
         if "OK,MP:" in response:  # expect "OK,MP:<max_pressure>/"
             self.max_pressure = float(response.split(":")[1][:-1])
 
-    def command(self, command: str) -> dict[str, Any]:
+    def command(self, command: str) -> str:
         """Sends the passed string to the pump as bytes.
 
         Args:
@@ -127,7 +136,7 @@ class NextGenPumpBase:
                 port=self.serial.name,
             )
 
-        return {"response": response}  # we parse this later and add entries
+        return response  # we parse this later
 
     def write(self, msg: str, delay: float = 0.015) -> str:
         """Write a command to the pump.

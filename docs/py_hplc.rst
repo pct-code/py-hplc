@@ -37,6 +37,13 @@ You can open a pump instance like this ::
    >>> from py_hplc import NextGenPump
    >>> pump = NextGenPump("COM3")  # or "/dev/ttyUSB0", etc.
 
+Or like this ::
+
+  >>> from py_hplc import NextGenPump
+  >>> from serial import Serial
+  >>> device = Serial("COM3")  # or "/dev/ttyUSB0", etc.
+  >>> pump = NextGenPump(device)
+
 You can inspect the pump for useful information such as its pressure units, firmware version, max flowrate, etc. ::
 
    >>> pump.version
@@ -54,32 +61,34 @@ The interface behaves in a typical way. Pumps can be inspected or configured wit
     >>> pump.flowrate
     5.5
     >>> pump.run()
+    'OK/'
     >>> pump.is_running
     True
     >>> pump.stop()
+    'OK/'
     >>> pump.is_running
     False
     >>> pump.leak_detected
     False
 
 | Some pump commands, such as "CC" (current conditions), return many pieces of data at once.
-| This package makes the data available in concise, descriptive, value-typed dictionaries.
+| This package makes the data available in concise, descriptive, value-typed dataclasses.
 
 ::
 
-   >>> pump.current_conditions()
-   {'response': 'OK,0000,10.00/', 'pressure': 0, 'flowrate': 10.0}
-   >>> pump.read_faults()
-   {'response': 'OK,0,0,0/', 'motor stall fault': False, 'upper pressure fault': False, 'lower pressure fault': False}
+  >>> pump.current_conditions()
+  CurrentConditions(pressure=0, flowrate=10.0, response='OK,0000,10.00/')
+  >>> pump.read_faults()
+  Faults(motor_stall_fault=False, upper_pressure_fault=False, lower_pressure_fault=False, response='OK,0,0,0/')
 
 .. note::
 
     | Some pump commands return values of 0 or 1 that have no meaning.
-    | These are omitted from the dictionaries, but may be inspected using the "response" key.
+    | These are omitted from the returned dataclasses, but may be inspected using the :code:`response` attribute.
 
     ::
 
-        >>> pump.pump_information()["response"]
+        >>> pump.pump_info().response
         'OK,10.00,0,0,S10S,0,1,0,0,0,0,0,0,0,0,0,0,0/'
 
 Advanced usage
@@ -115,11 +124,11 @@ Talking with the pumps directly
 
 A somewhat lower-level interface is provided on the pump object's :code:`command` and :code:`write` methods.
 These methods are defined in :code:`NextGenPumpBase` and all pump methods rely on these internally.
-:code:`command` will always return a response dictionary, or raise an exception if the pump responds with an error code.
-:code:`write` will only ever return the pump's decoded reponse as a string. ::
+:code:`command` will always return a response in the form of a string, or raise an exception if the pump responds with an error code.
+:code:`write` will only ever return the pump's decoded reponse as a string, regardless of if an error occurs. ::
 
    >>> pump.command("pr")
-   {'response': 'OK,0000/'}
+   'OK,0000/'
    >>> pump.write("QQ")
    'OK, Debug Commands Enabled/'
 

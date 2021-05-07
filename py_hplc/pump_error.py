@@ -2,7 +2,7 @@
 
 
 class PumpError(Exception):
-    """Raised when the pump responds with the error code "Er/"."""
+    """Raised when the pump responds with the error code 'Er/'."""
 
     def __init__(
         self,

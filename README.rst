@@ -57,9 +57,11 @@ The interface behaves in a typical way. Pumps can be inspected or configured wit
   >>> pump.flowrate
   5.5
   >>> pump.run()
+  'OK/'
   >>> pump.is_running
   True
   >>> pump.stop()
+  'OK/'
   >>> pump.is_running
   False
   >>> pump.leak_detected

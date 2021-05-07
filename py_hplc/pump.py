@@ -169,7 +169,7 @@ class NextGenPump(NextGenPumpBase):
     a string represtation of the pump's response.
     """
 
-    def __init__(self, device: Union[str, Serial], logger: Logger = None) -> None:
+    def __init__(self, device: Union[Serial, str], logger: Logger = None) -> None:
         """Inititalizes a `NextGenPump` instance.
 
         Args:

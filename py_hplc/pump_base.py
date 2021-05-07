@@ -22,7 +22,7 @@ if TYPE_CHECKING:
 class NextGenPumpBase:
     """Serial port wrapper for MX-class Teledyne pumps."""
 
-    def __init__(self, device: Union[str, Serial], logger: Logger = None) -> None:
+    def __init__(self, device: Union[Serial, str], logger: Logger = None) -> None:
         # you'll have to reach in and add handlers yourself from the calling code
         if logger is None:  # append to the root logger
             self.logger = logging.getLogger(f"{logging.getLogger().name}.{device}")

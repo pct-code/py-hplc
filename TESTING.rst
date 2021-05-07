@@ -8,7 +8,7 @@ Basic functionality can be tested for using Python's :code:`unittest` module.
 
 The tests can be run as follows ::
 
-    python -m unittest <PATH_TO_TEST> <PORT> 
+    python <PATH_TO_TEST> <PORT> 
 
 - <PATH_TO_TEST> is the path to the test you want to run
 - <PORT> is the local pump's serial port (eg. "COM3" or "/dev/ttyUSB0", etc.)

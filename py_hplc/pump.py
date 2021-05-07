@@ -15,7 +15,7 @@ from enum import Enum
 from logging import Logger
 from typing import TYPE_CHECKING
 
-from serial import Serial
+from serial.serialutil import SerialBase
 
 from py_hplc.pump_base import NextGenPumpBase
 
@@ -169,7 +169,7 @@ class NextGenPump(NextGenPumpBase):
     a string represtation of the pump's response.
     """
 
-    def __init__(self, device: Union[Serial, str], logger: Logger = None) -> None:
+    def __init__(self, device: Union[SerialBase, str], logger: Logger = None) -> None:
         """Inititalizes a `NextGenPump` instance.
 
         Args:

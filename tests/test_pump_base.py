@@ -25,7 +25,7 @@ class TestPumpBase(unittest.TestCase):
 
     def test_identify(self) -> None:
         """Tests initializing a NextGenPumpBase,
-        as well as its .open and .identify methods.
+        as well as its `open` and `identify` methods.
         """
         self.assertTrue(self.PUMP.is_open)
         self.assertIsInstance(self.PUMP.max_flowrate, float)
@@ -42,9 +42,11 @@ class TestPumpBase(unittest.TestCase):
         # make sure bad commands throw an error
         self.assertRaises(PumpError, self.PUMP.command, "foobar")
 
-    def test_close(self) -> None:
+    def test_open_close(self) -> None:
         self.PUMP.close()
         self.assertFalse(self.PUMP.is_open)
+        self.PUMP.open()
+        self.assertTrue(self.PUMP.is_open)
 
 
 if __name__ == "__main__":

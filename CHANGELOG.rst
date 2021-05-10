@@ -2,6 +2,10 @@
 Changelog
 =========
 
+v1.0.1
+------
+- more robust pump initialization
+
 v1.0.0
 ------
 - now has a full test suite! 🎉

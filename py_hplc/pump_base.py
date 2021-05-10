@@ -23,12 +23,6 @@ class NextGenPumpBase:
     """Serial port wrapper for MX-class Teledyne pumps."""
 
     def __init__(self, device: Union[SerialBase, str], logger: Logger = None) -> None:
-        # you'll have to reach in and add handlers yourself from the calling code
-        if logger is None:  # append to the root logger
-            self.logger = logging.getLogger(f"{logging.getLogger().name}.{device}")
-        else:  # append to the passed logger
-            self.logger = logging.getLogger(f"{logger.name}.{device}")
-
         if isinstance(device, str):
             # fetch a platform-appropriate serial interface
             self.serial = serial_for_url(
@@ -39,9 +33,17 @@ class NextGenPumpBase:
                 parity=PARITY_NONE,
                 stopbits=STOPBITS_ONE,
                 timeout=0.1,  # 100 ms
-            )
+            )  # we have to manually open this later
         elif isinstance(device, SerialBase):
             self.serial = device
+        else:
+            raise ValueError("Must init using a Serial object or valid port string")
+
+        # you'll have to reach in and add handlers yourself from the calling code
+        if logger is None:  # append to the root logger
+            self.logger = logging.getLogger(f"{logging.getLogger().name}.{device}")
+        elif isinstance(logger, Logger):  # append to the passed logger
+            self.logger = logging.getLogger(f"{logger.name}.{device}")
 
         # persistent identifying attributes
         self.max_flowrate: float = None

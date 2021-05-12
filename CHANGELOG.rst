@@ -2,6 +2,10 @@
 Changelog
 =========
 
+v1.0.2 
+------
+- fix bug in logging imports 
+
 v1.0.1
 ------
 - more robust pump initialization

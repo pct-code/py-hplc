@@ -6,7 +6,7 @@ an interface for communicating with the pumps.
 
 from __future__ import annotations
 
-import logging
+from logging import Logger, getLogger
 from time import sleep
 from typing import TYPE_CHECKING, Union
 
@@ -41,9 +41,9 @@ class NextGenPumpBase:
 
         # you'll have to reach in and add handlers yourself from the calling code
         if logger is None:  # append to the root logger
-            self.logger = logging.getLogger(f"{logging.getLogger().name}.{device}")
+            self.logger = getLogger(f"{getLogger().name}.{device}")
         elif isinstance(logger, Logger):  # append to the passed logger
-            self.logger = logging.getLogger(f"{logger.name}.{device}")
+            self.logger = getLogger(f"{logger.name}.{device}")
 
         # persistent identifying attributes
         self.max_flowrate: float = None

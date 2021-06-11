@@ -1,6 +1,6 @@
-========================================================================================
-py-hplc |license| |python| |pypi| |build-status| |docs| |style| |code quality|
-========================================================================================
+=================================================================================================
+py-hplc |license| |python| |pypi| |build-status| |docs| |style| |code quality| |maintainability|
+=================================================================================================
 
 Overview
 ==========
@@ -112,3 +112,8 @@ See the `API Documentation`_ for more usage examples.
 .. |code quality| image:: https://img.shields.io/badge/code%20quality-flake8-black
   :target: https://gitlab.com/pycqa/flake8
   :alt: Code quality
+  
+.. |maintainability| image:: https://api.codeclimate.com/v1/badges/dde06c3f3ca89a3bbfb1/maintainability
+   :target: https://codeclimate.com/github/teauxfu/py-hplc/maintainability
+   :alt: Maintainability
+

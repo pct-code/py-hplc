@@ -2,6 +2,11 @@
 Changelog
 =========
 
+v1.0.3
+------
+- update readme
+- update links to repo in docs
+
 v1.0.2 
 ------
 - fix bug in logging imports 

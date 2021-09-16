@@ -15,7 +15,7 @@ This is an unofficial wrapper.
 | View the `source`_.
 | View the pumps' official `user documentation`_.
 
-.. _`source`: https://github.com/teauxfu/py-hplc
+.. _`source`: https://github.com/pct-code/py-hplc
 .. _`user documentation`: https://www.teledynessi.com/Manuals%20%20Guides/Product%20Guides%20and%20Resources/Serial%20Pump%20Control%20for%20Next%20Generation%20SSI%20Pumps.pdf
 
 Requirements

@@ -4,6 +4,7 @@ Changelog
 
 v1.0.3
 ------
+- update dependencies
 - update readme
 - update links to repo in docs
 

@@ -10,7 +10,6 @@ An unoffical Python wrapper for the SSI-Teledyne Next Generation class HPLC pump
 - `API Documentation`_
 - `Official pump documentation`_
 
-MIT license, (C) 2021 Alex Whittington <alex@southsun.tech>
 
 If you notice something weird, fragile, or otherwise encounter a bug, please open an `issue`_.
 
@@ -24,7 +23,7 @@ The package is available on PyPI.
 Using the package
 ==================
 
-.. image:: https://raw.githubusercontent.com/teauxfu/py-hplc/main/docs/demo.gif
+.. image:: https://raw.githubusercontent.com/pct-code/py-hplc/main/docs/demo.gif
   :alt: gif demonstrating example usage
 
 You can open a pump instance like this ::
@@ -78,16 +77,26 @@ The interface behaves in a typical way. Pumps can be inspected or configured wit
 
 See the `API Documentation`_ for more usage examples.
 
+License / Author
+================
+Released under the MIT license, (C) 2021.
+
+Written by `@teauxfu`_ for `Premier Chemical Technologies, LLC`_ .
+
 .. _`Download page`: https://pypi.org/project/py-hplc/
 
 .. _`API Documentation`: https://py-hplc.readthedocs.io/en/latest/
 
 .. _`Official pump documentation`: https://www.teledynessi.com/Manuals%20%20Guides/Product%20Guides%20and%20Resources/Serial%20Pump%20Control%20for%20Next%20Generation%20SSI%20Pumps.pdf
 
-.. _`issue`: https://github.com/teauxfu/py-hplc/issues
+.. _`issue`: https://github.com/pct-code/py-hplc/issues
 
-.. |license| image:: https://img.shields.io/github/license/teauxfu/py-hplc
-  :target: https://github.com/teauxfu/py-hplc/blob/main/LICENSE.txt
+.. _`@teauxfu`: https://github.com/teauxfu
+
+.. _`Premier Chemical Technologies, LLC`: https://premierchemical.tech
+
+.. |license| image:: https://img.shields.io/github/license/pct-code/py-hplc
+  :target: https://github.com/pct-code/py-hplc/blob/main/LICENSE.txt
   :alt: GitHub
 
 .. |python| image:: https://img.shields.io/pypi/pyversions/py-hplc
@@ -97,8 +106,8 @@ See the `API Documentation`_ for more usage examples.
   :target: https://pypi.org/project/py-hplc/
   :alt: PyPI
 
-.. |build-status| image:: https://github.com/teauxfu/py-hplc/actions/workflows/build.yml/badge.svg
-  :target: https://github.com/teauxfu/py-hplc/actions/workflows/build.yml
+.. |build-status| image:: https://github.com/pct-code/py-hplc/actions/workflows/build.yml/badge.svg
+  :target: https://github.com/pct-code/py-hplc/actions/workflows/build.yml
   :alt: Build Status
 
 .. |docs| image:: https://readthedocs.org/projects/pip/badge/?version=stable
@@ -114,6 +123,6 @@ See the `API Documentation`_ for more usage examples.
   :alt: Code quality
   
 .. |maintainability| image:: https://api.codeclimate.com/v1/badges/dde06c3f3ca89a3bbfb1/maintainability
-   :target: https://codeclimate.com/github/teauxfu/py-hplc/maintainability
+   :target: https://codeclimate.com/github/pct-code/py-hplc/maintainability
    :alt: Maintainability
 

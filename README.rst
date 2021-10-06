@@ -81,7 +81,7 @@ License / Author
 ================
 Released under the MIT license, (C) 2021.
 
-Written by `@teauxfu`_ for `Premier Chemical Technologies, LLC`_ .
+Written by `@teauxfu`_ for `Premier Chemical Technologies, LLC`_.
 
 .. _`Download page`: https://pypi.org/project/py-hplc/
 

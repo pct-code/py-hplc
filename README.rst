@@ -4,7 +4,7 @@ py-hplc |license| |python| |pypi| |build-status| |docs| |style| |code quality| |
 
 Overview
 ==========
-An unoffical Python wrapper for the SSI-Teledyne Next Generation class HPLC pumps.
+A Python wrapper for the SSI-Teledyne Next Generation class HPLC pumps.
 
 - `Download page`_
 - `API Documentation`_

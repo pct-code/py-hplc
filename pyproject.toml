@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "py-hplc"
-version = "1.0.3"
+version = "1.0.4"
 description = "An unoffical Python wrapper for the SSI-Teledyne Next Generation class HPLC pumps."
 license = "MIT"
 repository = "https://github.com/pct-code/py-hplc"
@@ -20,7 +20,7 @@ packages = [
 ]
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = "^3.9 | ^3.10"
 pyserial = "^3.5"
 
 [tool.poetry.dev-dependencies]

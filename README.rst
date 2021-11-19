@@ -106,7 +106,7 @@ Written by `@teauxfu`_ for `Premier Chemical Technologies, LLC`_.
   :target: https://pypi.org/project/py-hplc/
   :alt: PyPI
 
-.. |build-status| image:: https://github.com/pct-code/py-hplc/actions/workflows/build.yml/badge.svg
+.. |build-status| image:: https://github.com/pct-code/py-hplc/actions/workflows/manual.yml/badge.svg
   :target: https://github.com/pct-code/py-hplc/actions/workflows/build.yml
   :alt: Build Status
 

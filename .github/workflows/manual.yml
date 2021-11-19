@@ -1,0 +1,14 @@
+name: manual
+on: workflow_dispatch
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build and publish to pypi
+        uses: JRubics/poetry-publish@v1.8
+        with:
+          python_version: "3.10"
+          poetry_version: "latest" # (PIP version specifier syntax)
+          pypi_token: ${{ secrets.PYPI_TOKEN }}
